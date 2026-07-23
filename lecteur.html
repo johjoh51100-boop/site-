@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORCO STREAM - Ultimate UI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+        /* --- VARIABLES ULTRA-PREMIUM --- */
+        :root {
+            --bg-body: #010308;
+            --bg-card: rgba(10, 15, 30, 0.4);
+            --bg-panel: rgba(5, 10, 20, 0.55);
+            --bg-header: rgba(1, 3, 8, 0.75);
+            --accent: #00f2fe;
+            --highlight: #4facfe;
+            --text-main: #ffffff;
+            --text-sub: #8b9bb4;
+            --glass: blur(24px) saturate(200%);
+            --border-light: rgba(255, 255, 255, 0.05);
+            --border-glow: rgba(0, 242, 254, 0.3);
+            --shadow-core: 0 20px 50px rgba(0, 0, 0, 0.8);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- ARRIERE-PLAN HOLOGRAPHIQUE & ANIMÉ --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(79, 172, 254, 0.05), transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(0, 242, 254, 0.05), transparent 30%);
+            z-index: -1;
+            pointer-events: none;
+            animation: ambientGlow 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes ambientGlow {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(5deg) scale(1.1); }
+        }
+
+        /* --- HEADER BIONIQUE --- */
+        header {
+            background: var(--bg-header);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+            padding: 18px 50px;
+            position: sticky;
+            top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        header h1 {
+            font-size: 30px; font-weight: 900; letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #fff 20%, var(--accent) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+        }
+
+        header h1:hover { 
+            transform: scale(1.03); 
+            filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.4));
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%; max-width: 450px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 24px 14px 50px;
+            border-radius: 40px; 
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-light);
+            color: var(--text-main);
+            font-size: 15px; font-weight: 500;
+            transition: var(--transition);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .search-input:focus {
+            background: rgba(0, 242, 254, 0.03);
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.15), inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .search-icon {
+            position: absolute; left: 20px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent); font-size: 16px;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        main {
+            padding: 50px; max-width: 1500px; margin: 0 auto;
+        }
+
+        /* --- ANIMATIONS DES VUES --- */
+        .page-view {
+            display: none;
+            animation: viewEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes viewEnter {
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .active-view { display: block; }
+
+        .section-title {
+            font-size: 38px; font-weight: 900; margin-bottom: 35px;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #fff, var(--text-sub));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- GRILLE ACCUEIL (CARTES 3D GLASS) --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 35px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            box-shadow: var(--shadow-core);
+            border: 1px solid var(--border-light);
+        }
+
+        /* Effet de brillance interne */
+        .card::after {
+            content: ''; position: absolute; inset: 0;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0; transition: var(--transition); pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 242, 254, 0.15);
+            border-color: var(--border-glow);
+        }
+
+        .card:hover::after { opacity: 1; }
+
+        .card-img-wrapper {
+            position: relative; width: 100%; padding-top: 145%;
+            overflow: hidden;
+        }
+
+        .card img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover img { transform: scale(1.1); filter: brightness(1.1); }
+
+        .card-content {
+            padding: 20px;
+            background: linear-gradient(to top, #000 10%, rgba(0,0,0,0.9) 60%, transparent 100%);
+            position: absolute; bottom: 0; left: 0; width: 100%;
+        }
+
+        .card-title {
+            font-size: 17px; font-weight: 800; letter-spacing: -0.5px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        /* --- PAGE DÉTAIL ANIMÉ (ONGLETS NEO) --- */
+        .btn-back {
+            background: rgba(255,255,255,0.03); color: var(--text-sub);
+            border: 1px solid var(--border-light); padding: 12px 28px; border-radius: 40px;
+            cursor: pointer; margin-bottom: 40px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 10px;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-back:hover { 
+            background: var(--accent); color: #000; 
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .anime-detail-header {
+            display: flex; gap: 50px; margin-bottom: 50px;
+            background: var(--bg-panel);
+            padding: 40px; border-radius: 30px;
+            border: 1px solid var(--border-light);
+            backdrop-filter: var(--glass);
+        }
+
+        @media (max-width: 768px) {
+            .anime-detail-header { flex-direction: column; padding: 20px; }
+        }
+
+        .detail-poster {
+            width: 280px; border-radius: 20px;
+            box-shadow: var(--shadow-core); flex-shrink: 0;
+            border: 1px solid var(--border-light);
+        }
+
+        .anime-info h2 { font-size: 54px; font-weight: 900; margin-bottom: 25px; line-height: 1; letter-spacing: -2px; }
+        .anime-resume { font-size: 17px; color: var(--text-sub); line-height: 1.8; font-weight: 400; }
+
+        /* Onglets Ultra-fluides */
+        .tabs-container {
+            display: flex; gap: 15px; margin-bottom: 30px;
+            overflow-x: auto; padding-bottom: 15px;
+            scrollbar-width: none;
+        }
+
+        .tabs-container::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: var(--bg-card); border: 1px solid var(--border-light);
+            color: var(--text-sub); padding: 14px 28px;
+            border-radius: 14px; font-weight: 800; cursor: pointer;
+            transition: var(--transition); white-space: nowrap;
+        }
+
+        .tab-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+        .tab-btn.active {
+            background: var(--accent);
+            color: #000; border-color: transparent;
+            box-shadow: 0 5px 20px rgba(0, 242, 254, 0.25);
+        }
+
+        /* Grille Épisodes */
+        .episodes-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .episode-card {
+            background: var(--bg-card); border: 1px solid var(--border-light);
+            padding: 20px; border-radius: 16px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+
+        .episode-card:hover {
+            background: rgba(0, 242, 254, 0.05);
+            border-color: var(--border-glow);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .ep-info { display: flex; flex-direction: column; gap: 6px; }
+        .ep-num { font-size: 13px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .ep-title { font-size: 16px; font-weight: 700; color: #fff;}
+        
+        .badge {
+            padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.2);
+        }
+        .badge.vf { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .badge.vostfr { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+
+        /* --- LECTEUR UNIQUE & HUD HOLOGRAPHIQUE --- */
+        .player-layout { max-width: 1200px; margin: 0 auto; }
+        
+        .player-top-info { text-align: center; margin-bottom: 30px; }
+        .player-top-info h2 { font-size: 28px; font-weight: 900; margin-bottom: 8px; letter-spacing: -1px;}
+        .player-top-info p { color: var(--accent); font-weight: 700; font-size: 15px; letter-spacing: 1px; }
+
+        .player-wrapper {
+            position: relative; padding-bottom: 56.25%; height: 0;
+            background: #000; border-radius: 20px; overflow: hidden;
+            box-shadow: var(--shadow-core), 0 0 40px rgba(0, 242, 254, 0.1); 
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+        }
+
+        .player-wrapper iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+        }
+
+        /* Centre de commande HUD */
+        .command-center {
+            background: var(--bg-panel); backdrop-filter: var(--glass);
+            border: 1px solid var(--border-light); border-radius: 24px; padding: 35px;
+            display: flex; flex-direction: column; gap: 25px;
+            box-shadow: inset 0 2px 20px rgba(255,255,255,0.02), 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .nav-buttons {
+            display: flex; justify-content: space-between; gap: 20px;
+        }
+
+        .nav-btn {
+            flex: 1; background: rgba(255,255,255,0.03); color: var(--text-main);
+            border: 1px solid var(--border-light); padding: 18px; border-radius: 16px;
+            font-weight: 800; font-size: 14px; cursor: pointer;
+            transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 12px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--accent); color: #000; border-color: transparent;
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3);
+            transform: translateY(-3px);
+        }
+        .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+        /* Pilules Futuristes */
+        .quick-select-row {
+            display: flex; align-items: center; gap: 20px;
+        }
+
+        .quick-select-label { font-weight: 900; color: var(--text-sub); width: 85px; flex-shrink: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .pill-container {
+            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;
+            scrollbar-width: none; 
+        }
+        .pill-container::-webkit-scrollbar { display: none; }
+
+        .pill {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: var(--text-sub);
+            padding: 10px 22px; border-radius: 30px; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: var(--transition); white-space: nowrap;
+        }
+
+        .pill:hover { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2); }
+        .pill.active { 
+            background: #fff; color: #000; border-color: transparent; 
+            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 onclick="router.home()">ORCO STREAM</h1>
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" class="search-input" placeholder="Rechercher un animé..." oninput="handleSearch(this.value)">
+        </div>
+    </header>
+
+    <main id="app">
+        <!-- VUE ACCUEIL -->
+        <div id="view-home" class="page-view active-view">
+            <h2 class="section-title">Découvrir</h2>
+            <div class="grid" id="home-grid"></div>
+        </div>
+
+        <!-- VUE DETAIL ANIME -->
+        <div id="view-anime" class="page-view">
+            <button class="btn-back" onclick="router.home()">← Retour à l'accueil</button>
+            <div id="anime-detail-content"></div>
+        </div>
+
+        <!-- VUE PLAYER -->
+        <div id="view-player" class="page-view">
+            <button class="btn-back" id="player-to-anime-btn">← Fiche de l'animé</button>
+            
+            <div class="player-layout">
+                <div class="player-top-info">
+                    <h2 id="player-anime-name"></h2>
+                    <p id="player-ep-info"></p>
+                </div>
+
+                <div class="player-wrapper" id="player-wrapper">
+                    <!-- L'iframe est générée ici dynamiquement par le JS pour l'Anti-Flag -->
+                </div>
+
+                <!-- LE CENTRE DE CONTROLE UNIQUE -->
+                <div class="command-center">
+                    
+                    <div class="nav-buttons">
+                        <button id="btn-prev" class="nav-btn" onclick="navigateEpisode(-1)">◄ Épisode Précédent</button>
+                        <button id="btn-next" class="nav-btn" onclick="navigateEpisode(1)">Épisode Suivant ►</button>
+                    </div>
+
+                    <div class="quick-select-row">
+                        <span class="quick-select-label">Saison</span>
+                        <div class="pill-container" id="player-season-pills"></div>
+                    </div>
+
+                    <div class="quick-select-row">
+                        <span class="quick-select-label">Épisode</span>
+                        <div class="pill-container" id="player-episode-pills"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        /* --- JSON EXACT --- */
+        const database = [
+            {
+                "id": "battlegi5",
+                "title": "Battle Game in 5 Seconds",
+                "image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/rt1gmKCONtlcJoBfNvNhcLQziLH.jpg",
+                "resume": "C'était un matin comme les autres. Akira Shiroyanagi, un lycéen grand amateur de jeux vidéo et de konpeito, se retrouve soudainement entraîné dans une bataille par une mystérieuse jeune fille nommée Mion. Elle dit aux participants qu'ils ont été effacés de tous les registres, qu'ils font partie d'une expérience et qu'ils ont acquis certains pouvoirs.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Sophiste", "lang": "VF", "sibnetId": "4401789" },
+                            { "number": 2, "title": "Déesse infernale", "lang": "VF", "sibnetId": "4409607" },
+                            { "number": 3, "title": "Ferrailleur ", "lang": "VF", "sibnetId": "4415829" },
+                            { "number": 4, "title": "Ironiste", "lang": "VF", "sibnetId": "4429210" },
+                            { "number": 5, "title": "Chasseur", "lang": "VF", "sibnetId": "4429212" },
+                            { "number": 6, "title": "Négociateur", "lang": "VF", "sibnetId": "4438305" },
+                            { "number": 7, "title": "Tyran", "lang": "VF", "sibnetId": "4447929" },
+                            { "number": 8, "title": "Escorte", "lang": "VF", "sibnetId": "4455282" },
+                            { "number": 9, "title": "Iron Maiden", "lang": "VF", "sibnetId": "4464986" },
+                            { "number": 10, "title": "Poings d'acier", "lang": "VF", "sibnetId": "4484404" },
+                            { "number": 11, "title": "Usurier", "lang": "VF", "sibnetId": "4499766" },
+                            { "number": 12, "title": "Le dernier pouvoir", "lang": "VF", "sibnetId": "4499765" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "narutos",
+                "title": "Naruto Shippuden",
+                "image": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/zAYRe2bJxpWTVrwwmBc00VFkAf4.jpg",
+                "resume": "Naruto Uzumaki est de retour. Après deux ans et demi d'entraînement intensif avec le maître Jiraya, il revient à Konoha plus fort et déterminé que jamais à retrouver son ami Sasuke et à devenir Hokage. Mais l'organisation criminelle Akatsuki est en mouvement, cherchant à capturer tous les démons à queues.",
+                "seasons": [
+                      {
+                        "season_number": 1,
+                        "episodes": [
+                          { "number": 1, "title": "Retour au pays", "lang": "VF", "sibnetId": "2945063" },
+                          { "number": 2, "title": "L'Akatsuki se met en mouvement", "lang": "VF", "sibnetId": "2945064" },
+                          { "number": 3, "title": "Les Résultats de l'entraînement", "lang": "VF", "sibnetId": "2945065" },
+                          { "number": 4, "title": "Le Hôtage de Suna", "lang": "VF", "sibnetId": "3343514" },
+                          { "number": 5, "title": "En tant que Kazekage...", "lang": "VF", "sibnetId": "2945073" },
+                          { "number": 6, "title": "Mission accomplie", "lang": "VF", "sibnetId": "2945077" },
+                          { "number": 7, "title": "Cours, Kankurô !", "lang": "VF", "sibnetId": "2945082" },
+                          { "number": 8, "title": "L'Équipe Kakashi au complet", "lang": "VF", "sibnetId": "3343517" },
+                          { "number": 9, "title": "Les Larmes du Jinchûriki", "lang": "VF", "sibnetId": "2945115" },
+                          { "number": 10, "title": "Technique de scellement : Les neuf dragons illusionnistes", "lang": "VF", "sibnetId": "2945122" },
+                          { "number": 11, "title": "La Disciple du médecin", "lang": "VF", "sibnetId": "3343519" },
+                          { "number": 12, "title": "La Décision de la grand-mère", "lang": "VF", "sibnetId": "2945129" },
+                          { "number": 13, "title": "Une rencontre destinée", "lang": "VF", "sibnetId": "2945131" },
+                          { "number": 14, "title": "La Maturation de Naruto", "lang": "VF", "sibnetId": "2945145" },
+                          { "number": 15, "title": "La Sphère cachée", "lang": "VF", "sibnetId": "2945147" },
+                          { "number": 16, "title": "Le Secret du Jinchûriki", "lang": "VF", "sibnetId": "2945149" },
+                          { "number": 17, "title": "La Mort de Gaara !", "lang": "VF", "sibnetId": "2945152" },
+                          { "number": 18, "title": "Chargez ! La tactique du crochet", "lang": "VF", "sibnetId": "2945154" },
+                          { "number": 19, "title": "Le Piège se déclenche ! Les ennemis de l'équipe Gaï", "lang": "VF", "sibnetId": "2945156" },
+                          { "number": 20, "title": "Hiruko contre les deux kunoichi", "lang": "VF", "sibnetId": "" },
+                          { "number": 21, "title": "Le Visage de Sasori", "lang": "VF", "sibnetId": "" },
+                          { "number": 22, "title": "Les Aptitudes secrètes de Chiyo", "lang": "VF", "sibnetId": "" },
+                          { "number": 23, "title": "Papa et Maman", "lang": "VF", "sibnetId": "" },
+                          { "number": 24, "title": "Le Troisième Kazekage", "lang": "VF", "sibnetId": "" },
+                          { "number": 25, "title": "Trois minutes pour vivre et mourir", "lang": "VF", "sibnetId": "" },
+                          { "number": 26, "title": "Dix contre cent !", "lang": "VF", "sibnetId": "" },
+                          { "number": 27, "title": "Le Rêve irréalisable", "lang": "VF", "sibnetId": "" },
+                          { "number": 28, "title": "Les Monstres ressuscités", "lang": "VF", "sibnetId": "" },
+                          { "number": 29, "title": "Kakashi ouvre les yeux !", "lang": "VF", "sibnetId": "" },
+                          { "number": 30, "title": "La Beauté de l'instant", "lang": "VF", "sibnetId": "" },
+                          { "number": 31, "title": "La Prochaine Génération", "lang": "VF", "sibnetId": "" },
+                          { "number": 32, "title": "Le Retour du Kazekage", "lang": "VF", "sibnetId": "" }
+                        ]
+                      },
+                      {
+                        "season_number": 2,
+                        "episodes": [
+                          { "number": 33, "title": "La Nouvelle Cible", "lang": "VF", "sibnetId": "2945243" },
+                          { "number": 34, "title": "La Formation de la nouvelle équipe Kakashi !", "lang": "VF", "sibnetId": "2945247" },
+                          { "number": 35, "title": "Une addition non désirée", "lang": "VF", "sibnetId": "2945249" },
+                          { "number": 36, "title": "Un faux sourire", "lang": "VF", "sibnetId": "2945251" },
+                          { "number": 37, "title": "Sans titre", "lang": "VF", "sibnetId": "3343531" },
+                          { "number": 38, "title": "Simulation", "lang": "VF", "sibnetId": "2945253" },
+                          { "number": 39, "title": "Le Pont du Ciel et de la Terre", "lang": "VF", "sibnetId": "2945255" },
+                          { "number": 40, "title": "Le Kyûbi se déchaîne", "lang": "VF", "sibnetId": "2945258" },
+                          { "number": 41, "title": "La Mission secrète commence", "lang": "VF", "sibnetId": "2945259" },
+                          { "number": 42, "title": "Orochimaru contre le Jinchûriki", "lang": "VF", "sibnetId": "3343534" },
+                          { "number": 43, "title": "Les Larmes de Sakura", "lang": "VF", "sibnetId": "3343539" },
+                          { "number": 44, "title": "Les Détails du combat", "lang": "VF", "sibnetId": "2945265" },
+                          { "number": 45, "title": "Les Limites de la trahison", "lang": "VF", "sibnetId": "2945266" },
+                          { "number": 46, "title": "La Page Inachevée", "lang": "VF", "sibnetId": "2945268" },
+                          { "number": 47, "title": "Le Nid du serpent venimeux", "lang": "VF", "sibnetId": "2945270" },
+                          { "number": 48, "title": "Les Liens", "lang": "VF", "sibnetId": "2945272" },
+                          { "number": 49, "title": "Une personne importante", "lang": "VF", "sibnetId": "2945274" },
+                          { "number": 50, "title": "L'Histoire de l'album photo", "lang": "VF", "sibnetId": "2945275" },
+                          { "number": 51, "title": "Retrouvailles", "lang": "VF", "sibnetId": "2945276" },
+                          { "number": 52, "title": "La Puissance des Uchiwa", "lang": "VF", "sibnetId": "2945277" },
+                          { "number": 53, "title": "Titre", "lang": "VF", "sibnetId": "2945280" }
+                        ]
+                      },
+                      {
+                        "season_number": 3,
+                        "episodes": [
+                           { "number": 54, "title": "Cauchemar", "lang": "VF", "sibnetId": "2945284" },
+                           { "number": 55, "title": "Vent", "lang": "VF", "sibnetId": "2945285" },
+                           { "number": 56, "title": "Volonté", "lang": "VF", "sibnetId": "2945286" },
+                           { "number": 57, "title": "Un repos éternel", "lang": "VF", "sibnetId": "2945288" },
+                           { "number": 58, "title": "La Solitude", "lang": "VF", "sibnetId": "2945288" },
+                           { "number": 59, "title": "Un nouvel ennemi", "lang": "VF", "sibnetId": "2945289" },
+                           { "number": 60, "title": "Les Tournants de la roue", "lang": "VF", "sibnetId": "2945290" },
+                           { "number": 61, "title": "Prise de contact", "lang": "VF", "sibnetId": "2945292" },
+                           { "number": 62, "title": "Coéquipier", "lang": "VF", "sibnetId": "2945293" },
+                           { "number": 63, "title": "Les Deux Souverains", "lang": "VF", "sibnetId": "1000063" },
+                           { "number": 64, "title": "Le Feu noir de la destruction", "lang": "VF", "sibnetId": "1000064" },
+                           { "number": 65, "title": "Le Piège des ténèbres", "lang": "VF", "sibnetId": "1000065" },
+                           { "number": 66, "title": "Les Âmes ressuscitées", "lang": "VF", "sibnetId": "2945298" },
+                           { "number": 67, "title": "Les Efforts de chacun", "lang": "VF", "sibnetId": "2945301" },
+                           { "number": 68, "title": "Le Moment du réveil", "lang": "VF", "sibnetId": "1000068" },
+                           { "number": 69, "title": "Désespoir", "lang": "VF", "sibnetId": "1000069" },
+                           { "number": 70, "title": "Résonance", "lang": "VF", "sibnetId": "2945303" },
+                           { "number": 71, "title": "Mon ami", "lang": "VF", "sibnetId": "2945304" }
+                        ]
+                      },
+                      {
+                        "season_number": 4,
+                        "episodes": [
+                           { "number": 72, "title": "La Menace qui s'approche", "lang": "VF", "sibnetId": "2945305" },
+                           { "number": 73, "title": "L'Invasion d'Akatsuki", "lang": "VF", "sibnetId": "2945306" },
+                           { "number": 74, "title": "Sous un ciel étoilé", "lang": "VF", "sibnetId": "2945308" },
+                           { "number": 75, "title": "La Prière du vieux moine", "lang": "VF", "sibnetId": "2945309" },
+                           { "number": 76, "title": "L'Étape suivante", "lang": "VF", "sibnetId": "1000076" },
+                           { "number": 77, "title": "L'Escalade du diamant", "lang": "VF", "sibnetId": "1000077" },
+                           { "number": 78, "title": "Jugement", "lang": "VF", "sibnetId": "2945307" },
+                           { "number": 79, "title": "Cri de détresse", "lang": "VF", "sibnetId": "2945307" },
+                           { "number": 80, "title": "Dernières Paroles", "lang": "VF", "sibnetId": "2945323" },
+                           { "number": 81, "title": "La Triste Nouvelle", "lang": "VF", "sibnetId": "2945324" },
+                           { "number": 82, "title": "L'Équipe 10", "lang": "VF", "sibnetId": "2945326" },
+                           { "number": 83, "title": "Cible verrouillée", "lang": "VF", "sibnetId": "2945328" },
+                           { "number": 84, "title": "La Capacité de Kakuzu", "lang": "VF", "sibnetId": "1000084" },
+                           { "number": 85, "title": "Le Terrible Secret", "lang": "VF", "sibnetId": "1000085" },
+                           { "number": 86, "title": "Le Génie de Shikamaru", "lang": "VF", "sibnetId": "1000086" },
+                           { "number": 87, "title": "Quand on maudit quelqu'un...", "lang": "VF", "sibnetId": "1000087" },
+                           { "number": 88, "title": "Fûton - Le Shuriken Tourbillon !", "lang": "VF", "sibnetId": "1000088" }
+                        ]
+                      },               
+                      {
+                        "season_number": 5,
+                        "episodes": [
+                          { "number": 89, "title": "Le Prix du pouvoir", "lang": "VF", "sibnetId": "1000089" },
+                          { "number": 90, "title": "La Résolution du ninja", "lang": "VF", "sibnetId": "1000090" },
+                          { "number": 91, "title": "Le Repaire d'Orochimaru découvert", "lang": "VF", "sibnetId": "1000091" },
+                          { "number": 92, "title": "Rencontre", "lang": "VF", "sibnetId": "1000092" },
+                          { "number": 93, "title": "Connexion des cœurs", "lang": "VF", "sibnetId": "1000093" },
+                          { "number": 94, "title": "Une nuit de pluie", "lang": "VF", "sibnetId": "1000094" },
+                          { "number": 95, "title": "Les Deux Charmes", "lang": "VF", "sibnetId": "1000095" },
+                          { "number": 96, "title": "Un ennemi invisible", "lang": "VF", "sibnetId": "1000096" },
+                          { "number": 97, "title": "Le Labyrinthe des reflets distordus", "lang": "VF", "sibnetId": "1000097" },
+                          { "number": 98, "title": "L'Ennemi apparaît", "lang": "VF", "sibnetId": "1000098" },
+                          { "number": 99, "title": "Le Déchaînement du Sanbi", "lang": "VF", "sibnetId": "1000099" },
+                          { "number": 100, "title": "Dans la brume", "lang": "VF", "sibnetId": "1000100" },
+                          { "number": 101, "title": "Les Sentiments de chacun", "lang": "VF", "sibnetId": "1000101" },
+                          { "number": 102, "title": "Le Regroupement !", "lang": "VF", "sibnetId": "1000102" },
+                          { "number": 103, "title": "La Barrière aux quatre sceaux", "lang": "VF", "sibnetId": "1000103" },
+                          { "number": 104, "title": "La Destruction du Fûton", "lang": "VF", "sibnetId": "1000104" },
+                          { "number": 105, "title": "La Bataille pour la barrière", "lang": "VF", "sibnetId": "1000105" },
+                          { "number": 106, "title": "Camélia rouge", "lang": "VF", "sibnetId": "1000106" },
+                          { "number": 107, "title": "Des ennemis étranges", "lang": "VF", "sibnetId": "1000107" },
+                          { "number": 108, "title": "Le Guide du camélia", "lang": "VF", "sibnetId": "1000108" },
+                          { "number": 109, "title": "La Contre-attaque de la marque maudite", "lang": "VF", "sibnetId": "1000109" },
+                          { "number": 110, "title": "Souvenirs de culpabilité", "lang": "VF", "sibnetId": "1000110" },
+                          { "number": 111, "title": "La Promesse brisée", "lang": "VF", "sibnetId": "1000111" },
+                          { "number": 112, "title": "Le Lieu où revenir", "lang": "VF", "sibnetId": "1000112" }
+                        ]
+                      },
+                      {
+                        "season_number": 6,
+                        "episodes": [
+                          { "number": 113, "title": "Le Disciple du serpent", "lang": "VF", "sibnetId": "1000113" },
+                          { "number": 114, "title": "Le Regard du serpent", "lang": "VF", "sibnetId": "1000114" },
+                          { "number": 115, "title": "La Mue du serpent", "lang": "VF", "sibnetId": "1000115" },
+                          { "number": 116, "title": "L'Épée de Zabuza", "lang": "VF", "sibnetId": "1000116" },
+                          { "number": 117, "title": "Le Gardien de la prison du fer", "lang": "VF", "sibnetId": "1000117" },
+                          { "number": 118, "title": "Jûgo de la porte du nord", "lang": "VF", "sibnetId": "1000118" },
+                          { "number": 119, "title": "Chroniques de Kakashi (1re partie)", "lang": "VF", "sibnetId": "1000119" },
+                          { "number": 120, "title": "Chroniques de Kakashi (2e partie)", "lang": "VF", "sibnetId": "1000120" },
+                          { "number": 121, "title": "Le Rassemblement", "lang": "VF", "sibnetId": "1000121" },
+                          { "number": 122, "title": "La Chasse", "lang": "VF", "sibnetId": "1000122" },
+                          { "number": 123, "title": "Le Choc !", "lang": "VF", "sibnetId": "1000123" },
+                          { "number": 124, "title": "Art", "lang": "VF", "sibnetId": "1000124" },
+                          { "number": 125, "title": "L'Explosion ultime", "lang": "VF", "sibnetId": "1000125" },
+                          { "number": 126, "title": "La Traque", "lang": "VF", "sibnetId": "1000126" },
+                          { "number": 127, "title": "Chroniques de Jiraya (1re partie)", "lang": "VF", "sibnetId": "1000127" },
+                          { "number": 128, "title": "Chroniques de Jiraya (2e partie)", "lang": "VF", "sibnetId": "1000128" },
+                          { "number": 129, "title": "Infiltration ! Le village de la Pluie", "lang": "VF", "sibnetId": "1000129" },
+                          { "number": 130, "title": "Le Dieu de Amegakure", "lang": "VF", "sibnetId": "1000130" },
+                          { "number": 131, "title": "Le Mode Hermite !", "lang": "VF", "sibnetId": "1000131" },
+                          { "number": 132, "title": "Les Six Corps de Pain", "lang": "VF", "sibnetId": "1000132" },
+                          { "number": 133, "title": "La Légende du galant Jiraya", "lang": "VF", "sibnetId": "1000133" },
+                          { "number": 134, "title": "Invitation au banquet", "lang": "VF", "sibnetId": "1000134" },
+                          { "number": 135, "title": "L'Instant le plus long...", "lang": "VF", "sibnetId": "1000135" },
+                          { "number": 136, "title": "La Lumière et les Ténèbres du Mangekyô", "lang": "VF", "sibnetId": "1000136" },
+                          { "number": 137, "title": "Amaterasu", "lang": "VF", "sibnetId": "1000137" },
+                          { "number": 138, "title": "La Fin", "lang": "VF", "sibnetId": "1000138" },
+                          { "number": 139, "title": "Le Mystère de Tobi", "lang": "VF", "sibnetId": "1000139" },
+                          { "number": 140, "title": "Le Destin", "lang": "VF", "sibnetId": "1000140" },
+                          { "number": 141, "title": "La Vérité", "lang": "VF", "sibnetId": "1000141" },
+                          { "number": 142, "title": "La Bataille de la vallée d'Unrai", "lang": "VF", "sibnetId": "1000142" },
+                          { "number": 143, "title": "Hachibi contre Sasuke", "lang": "VF", "sibnetId": "1000143" }
+                        ]
+                      },
+                      {
+                        "season_number": 7,
+                        "episodes": [
+                          { "number": 144, "title": "Le Vagabond", "lang": "VF", "sibnetId": "1000144" },
+                          { "number": 145, "title": "L'Héritier de la technique interdite", "lang": "VF", "sibnetId": "1000145" },
+                          { "number": 146, "title": "Les Sentiments de l'héritier", "lang": "VF", "sibnetId": "1000146" },
+                          { "number": 147, "title": "Le Passé du déserteur", "lang": "VF", "sibnetId": "1000147" },
+                          { "number": 148, "title": "L'Héritière des ténèbres", "lang": "VF", "sibnetId": "1000148" },
+                          { "number": 149, "title": "Séparation", "lang": "VF", "sibnetId": "1000149" },
+                          { "number": 150, "title": "La Technique interdite déchaînée", "lang": "VF", "sibnetId": "1000150" },
+                          { "number": 151, "title": "Maître et Disciple", "lang": "VF", "sibnetId": "1000151" }
+                        ]
+                      },
+                      {
+                        "season_number": 8,
+                        "episodes": [
+                          { "number": 152, "title": "Une triste nouvelle", "lang": "VF", "sibnetId": "1000152" },
+                          { "number": 153, "title": "Suivre l'ombre du maître", "lang": "VF", "sibnetId": "1000153" },
+                          { "number": 154, "title": "Décodage", "lang": "VF", "sibnetId": "1000154" },
+                          { "number": 155, "title": "La Première Épreuve", "lang": "VF", "sibnetId": "1000155" },
+                          { "number": 156, "title": "Surpasser le maître", "lang": "VF", "sibnetId": "1000156" },
+                          { "number": 157, "title": "L'Attaque de Konoha !", "lang": "VF", "sibnetId": "1000157" },
+                          { "number": 158, "title": "Le Pouvoir de croire", "lang": "VF", "sibnetId": "1000158" },
+                          { "number": 159, "title": "Pain contre Kakashi", "lang": "VF", "sibnetId": "1000159" },
+                          { "number": 160, "title": "Le Mystère de Pain", "lang": "VF", "sibnetId": "1000160" },
+                          { "number": 161, "title": "Mon nom est Hatake", "lang": "VF", "sibnetId": "1000161" },
+                          { "number": 162, "title": "Konoha détruit", "lang": "VF", "sibnetId": "1000162" },
+                          { "number": 163, "title": "Explosion ! Le mode Hermite", "lang": "VF", "sibnetId": "1000163" },
+                          { "number": 164, "title": "Danger ! Le mode Hermite disparaît", "lang": "VF", "sibnetId": "1000164" },
+                          { "number": 165, "title": "Le Kyûbi capturé", "lang": "VF", "sibnetId": "1000165" },
+                          { "number": 166, "title": "Confession", "lang": "VF", "sibnetId": "1000166" },
+                          { "number": 167, "title": "Chibaku Tensei", "lang": "VF", "sibnetId": "1000167" },
+                          { "number": 168, "title": "Le Quatrième Hokage", "lang": "VF", "sibnetId": "1000168" },
+                          { "number": 169, "title": "Les Deux Disciples", "lang": "VF", "sibnetId": "1000169" },
+                          { "number": 170, "title": "Grande Aventure ! (1re partie)", "lang": "VF", "sibnetId": "1000170" },
+                          { "number": 171, "title": "Grande Aventure ! (2e partie)", "lang": "VF", "sibnetId": "1000171" },
+                          { "number": 172, "title": "Rencontre", "lang": "VF", "sibnetId": "1000172" },
+                          { "number": 173, "title": "La Naissance de Pain", "lang": "VF", "sibnetId": "1000173" },
+                          { "number": 174, "title": "L'Histoire de Naruto Uzumaki", "lang": "VF", "sibnetId": "1000174" },
+                          { "number": 175, "title": "Le Héros de Konoha", "lang": "VF", "sibnetId": "1000175" }
+                        ]
+                      },
+                      {
+                        "season_number": 9,
+                        "episodes": [
+                          { "number": 176, "title": "Iruka, prof débutant", "lang": "VF", "sibnetId": "1000176" },
+                          { "number": 177, "title": "L'Épreuve d'Iruka", "lang": "VF", "sibnetId": "1000177" },
+                          { "number": 178, "title": "La Décision d'Iruka", "lang": "VF", "sibnetId": "1000178" },
+                          { "number": 179, "title": "Kakashi Hatake, Jônin en charge", "lang": "VF", "sibnetId": "1000179" },
+                          { "number": 180, "title": "Le Courage d'Inari testé", "lang": "VF", "sibnetId": "1000180" },
+                          { "number": 181, "title": "L'École de la vengeance de Naruto", "lang": "VF", "sibnetId": "1000181" },
+                          { "number": 182, "title": "Le Lectionnaire de Gaara", "lang": "VF", "sibnetId": "1000182" },
+                          { "number": 183, "title": "Le Déchaînement de Naruto", "lang": "VF", "sibnetId": "1000183" },
+                          { "number": 184, "title": "Sortie ! L'équipe de recherche de Tsunade", "lang": "VF", "sibnetId": "1000184" },
+                          { "number": 185, "title": "Le Territoire des animaux", "lang": "VF", "sibnetId": "1000185" },
+                          { "number": 186, "title": "Ah, la médecine de la jeunesse", "lang": "VF", "sibnetId": "1000186" },
+                          { "number": 187, "title": "L'Histoire du maître et de l'élève téméraire", "lang": "VF", "sibnetId": "1000187" },
+                          { "number": 188, "title": "Chronique du maître et de l'élève téméraire", "lang": "VF", "sibnetId": "1000188" },
+                          { "number": 189, "title": "L'Encyclopédie des pattes de Sasuke", "lang": "VF", "sibnetId": "1000189" },
+                          { "number": 190, "title": "Naruto et le vieux soldat", "lang": "VF", "sibnetId": "1000190" },
+                          { "number": 191, "title": "La Chanson d'amour de Kakashi", "lang": "VF", "sibnetId": "1000191" },
+                          { "number": 192, "title": "La Chronique de Neji", "lang": "VF", "sibnetId": "1000192" },
+                          { "number": 193, "title": "L'Homme qui est mort deux fois", "lang": "VF", "sibnetId": "1000193" },
+                          { "number": 194, "title": "Le Pire Course à trois", "lang": "VF", "sibnetId": "1000194" },
+                          { "number": 195, "title": "Coordination, équipe 10", "lang": "VF", "sibnetId": "1000195" },
+                          { "number": 196, "title": "Traversée vers les ténèbres", "lang": "VF", "sibnetId": "1000196" }
+                        ]
+                      },
+                      {
+                        "season_number": 10,
+                        "episodes": [
+                          { "number": 197, "title": "Le Sixième Hokage Danzô", "lang": "VF", "sibnetId": "1000197" },
+                          { "number": 198, "title": "La Veille du conseil des cinq Kage", "lang": "VF", "sibnetId": "1000198" },
+                          { "number": 199, "title": "Les Cinq Kage entrent en scène !", "lang": "VF", "sibnetId": "1000199" },
+                          { "number": 200, "title": "La Supplique de Naruto", "lang": "VF", "sibnetId": "1000200" },
+                          { "number": 201, "title": "Une décision difficile", "lang": "VF", "sibnetId": "1000201" },
+                          { "number": 202, "title": "L'Éclair fendant", "lang": "VF", "sibnetId": "1000202" },
+                          { "number": 203, "title": "La Voie de Sasuke", "lang": "VF", "sibnetId": "1000203" },
+                          { "number": 204, "title": "La Force des cinq Kage", "lang": "VF", "sibnetId": "1000204" },
+                          { "number": 205, "title": "Déclaration de guerre", "lang": "VF", "sibnetId": "1000205" },
+                          { "number": 206, "title": "Les Sentiments de Sakura", "lang": "VF", "sibnetId": "1000206" },
+                          { "number": 207, "title": "Le Bijuu contre le Bijuu sans queue", "lang": "VF", "sibnetId": "1000207" },
+                          { "number": 208, "title": "En tant qu'ami", "lang": "VF", "sibnetId": "1000208" },
+                          { "number": 209, "title": "Le Bras droit de Danzô", "lang": "VF", "sibnetId": "1000209" },
+                          { "number": 210, "title": "La Technique d'illusion interdite", "lang": "VF", "sibnetId": "1000210" },
+                          { "number": 211, "title": "Danzô Shimura", "lang": "VF", "sibnetId": "1000211" },
+                          { "number": 212, "title": "La Résolution de Sakura", "lang": "VF", "sibnetId": "1000212" },
+                          { "number": 213, "title": "Les Liens perdus", "lang": "VF", "sibnetId": "1000213" },
+                          { "number": 214, "title": "Le Fardeau à porter", "lang": "VF", "sibnetId": "1000214" },
+                          { "number": 215, "title": "Deux Destins", "lang": "VF", "sibnetId": "1000215" },
+                          { "number": 216, "title": "Les Ninjas d'élite", "lang": "VF", "sibnetId": "1000216" },
+                          { "number": 217, "title": "L'Infiltrateur", "lang": "VF", "sibnetId": "1000217" },
+                          { "number": 218, "title": "Les Nations se mobilisent", "lang": "VF", "sibnetId": "1000218" },
+                          { "number": 219, "title": "L'Hokage Hatake Kakashi", "lang": "VF", "sibnetId": "1000219" },
+                          { "number": 220, "title": "La Prophétie du Grand Sage Crapaud", "lang": "VF", "sibnetId": "1000220" },
+                          { "number": 221, "title": "La Réserve", "lang": "VF", "sibnetId": "1000221" }
+                        ]
+                      },
+                      {
+                        "season_number": 11,
+                        "episodes": [
+                          { "number": 222, "title": "La Décision des cinq Kage", "lang": "VF", "sibnetId": "1000222" },
+                          { "number": 223, "title": "Le Jeune Homme et la Mer", "lang": "VF", "sibnetId": "1000223" },
+                          { "number": 224, "title": "Les Ninjas de Benimaru", "lang": "VF", "sibnetId": "1000224" },
+                          { "number": 225, "title": "Le Bateau fantôme maudit", "lang": "VF", "sibnetId": "1000225" },
+                          { "number": 226, "title": "L'Île des navires de guerre", "lang": "VF", "sibnetId": "1000226" },
+                          { "number": 227, "title": "L'Île oubliée", "lang": "VF", "sibnetId": "1000227" },
+                          { "number": 228, "title": "Bats-toi, Rock Lee !", "lang": "VF", "sibnetId": "1000228" },
+                          { "number": 229, "title": "Manger ou être mangé ! Les champignons de l'enfer", "lang": "VF", "sibnetId": "1000229" },
+                          { "number": 230, "title": "La Révolte des clones", "lang": "VF", "sibnetId": "1000230" },
+                          { "number": 231, "title": "La Baie fermée", "lang": "VF", "sibnetId": "1000231" },
+                          { "number": 232, "title": "La Soirée entre filles de Konoha", "lang": "VF", "sibnetId": "1000232" },
+                          { "number": 233, "title": "L'Imposteur", "lang": "VF", "sibnetId": "1000233" },
+                          { "number": 234, "title": "Le Disciple de Naruto", "lang": "VF", "sibnetId": "1000234" },
+                          { "number": 235, "title": "La Kunoichi du village de Nadeshiko", "lang": "VF", "sibnetId": "1000235" },
+                          { "number": 236, "title": "Des amis sur qui compter", "lang": "VF", "sibnetId": "1000236" },
+                          { "number": 237, "title": "Ah, mon héroïne Tsunade !", "lang": "VF", "sibnetId": "1000237" },
+                          { "number": 238, "title": "Le Repos de Sai", "lang": "VF", "sibnetId": "1000238" },
+                          { "number": 239, "title": "Les Trois Ino-Shika-Chô", "lang": "VF", "sibnetId": "1000239" },
+                          { "number": 240, "title": "La Détermination de Chôji", "lang": "VF", "sibnetId": "1000240" },
+                          { "number": 241, "title": "Kakashi, mon éternel rival", "lang": "VF", "sibnetId": "1000241" },
+                          { "number": 242, "title": "Le Vœu de Naruto", "lang": "VF", "sibnetId": "1000242" }
+                        ]
+                      },
+                      {
+                        "season_number": 12,
+                        "episodes": [
+                          { "number": 243, "title": "Débarquement ! L'île paradisiaque ?", "lang": "VF", "sibnetId": "1000243" },
+                          { "number": 244, "title": "Killer Bee et Naruto", "lang": "VF", "sibnetId": "1000244" },
+                          { "number": 245, "title": "L'Épreuve ultime ! Naruto contre Kyûbi", "lang": "VF", "sibnetId": "1000245" },
+                          { "number": 246, "title": "L'Éclair orange", "lang": "VF", "sibnetId": "1000246" },
+                          { "number": 247, "title": "Cible : Kyûbi", "lang": "VF", "sibnetId": "1000247" },
+                          { "number": 248, "title": "Le Combat mortel du Quatrième Hokage !", "lang": "VF", "sibnetId": "1000248" },
+                          { "number": 249, "title": "Merci", "lang": "VF", "sibnetId": "1000249" },
+                          { "number": 250, "title": "Le Monstre contre le Démon !", "lang": "VF", "sibnetId": "1000250" },
+                          { "number": 251, "title": "L'Homme nommé Kisame", "lang": "VF", "sibnetId": "1000251" },
+                          { "number": 252, "title": "Le Messager de la mort", "lang": "VF", "sibnetId": "1000252" },
+                          { "number": 253, "title": "Le Pont vers la paix", "lang": "VF", "sibnetId": "1000253" },
+                          { "number": 254, "title": "Mission secrète de rang S", "lang": "VF", "sibnetId": "1000254" },
+                          { "number": 255, "title": "Le Retour de l'artiste", "lang": "VF", "sibnetId": "1000255" },
+                          { "number": 256, "title": "Rassemblement ! L'Alliance Ninja !", "lang": "VF", "sibnetId": "1000256" },
+                          { "number": 257, "title": "Rencontre", "lang": "VF", "sibnetId": "1000257" },
+                          { "number": 258, "title": "Rivaux", "lang": "VF", "sibnetId": "1000258" },
+                          { "number": 259, "title": "Fissure", "lang": "VF", "sibnetId": "1000259" },
+                          { "number": 260, "title": "Séparation", "lang": "VF", "sibnetId": "1000260" },
+                          { "number": 261, "title": "Pour mon ami", "lang": "VF", "sibnetId": "1000261" },
+                          { "number": 262, "title": "La Guerre commence !", "lang": "VF", "sibnetId": "1000262" },
+                          { "number": 263, "title": "Saï et Shin", "lang": "VF", "sibnetId": "1000263" },
+                          { "number": 264, "title": "Le Secret de l'Équipe de Réanimation", "lang": "VF", "sibnetId": "1000264" },
+                          { "number": 265, "title": "Retrouvailles avec un vieil ennemi", "lang": "VF", "sibnetId": "1000265" },
+                          { "number": 266, "title": "Le Premier Ennemi, le Dernier Ennemi", "lang": "VF", "sibnetId": "1000266" },
+                          { "number": 267, "title": "Le Brillant Stratège de Konoha", "lang": "VF", "sibnetId": "1000267" },
+                          { "number": 268, "title": "Chacun son combat !", "lang": "VF", "sibnetId": "1000268" },
+                          { "number": 269, "title": "Mot tabou", "lang": "VF", "sibnetId": "1000269" },
+                          { "number": 270, "title": "Les Liens d'or", "lang": "VF", "sibnetId": "1000270" },
+                          { "number": 271, "title": "En route pour Sakura", "lang": "VF", "sibnetId": "1000271" },
+                          { "number": 272, "title": "La Menace des Zetsu", "lang": "VF", "sibnetId": "1000272" },
+                          { "number": 273, "title": "Les Véritables Sentiments de Chôji", "lang": "VF", "sibnetId": "1000273" },
+                          { "number": 274, "title": "La Formation Ino-Shika-Chô finale !", "lang": "VF", "sibnetId": "1000274" },
+                          { "number": 275, "title": "Une lettre du cœur", "lang": "VF", "sibnetId": "1000275" }
+                        ]
+                      },
+                      {
+                        "season_number": 13,
+                        "episodes": [
+                          { "number": 276, "title": "L'Attaque de la statue du Grand Démon", "lang": "VF", "sibnetId": "1000276" },
+                          { "number": 277, "title": "Le Signe d'union", "lang": "VF", "sibnetId": "1000277" },
+                          { "number": 278, "title": "La Médicale ciblée", "lang": "VF", "sibnetId": "1000278" },
+                          { "number": 279, "title": "Le Piège des Zetsu blancs", "lang": "VF", "sibnetId": "1000279" },
+                          { "number": 280, "title": "L'Esthétique de l'artiste", "lang": "VF", "sibnetId": "1000280" },
+                          { "number": 281, "title": "L'Alliance des mères !", "lang": "VF", "sibnetId": "1000281" },
+                          { "number": 282, "title": "La Naissance du duo ultime !", "lang": "VF", "sibnetId": "1000282" },
+                          { "number": 283, "title": "Deux Éclairs !", "lang": "VF", "sibnetId": "1000283" },
+                          { "number": 284, "title": "Jinpachi et Kushimaru !", "lang": "VF", "sibnetId": "1000284" },
+                          { "number": 285, "title": "Pakura de Suna", "lang": "VF", "sibnetId": "1000285" },
+                          { "number": 286, "title": "Ce qu'on ne récupère jamais", "lang": "VF", "sibnetId": "1000286" },
+                          { "number": 287, "title": "Celui sur qui on peut compter", "lang": "VF", "sibnetId": "1000287" },
+                          { "number": 288, "title": "Menace de la marionnette !", "lang": "VF", "sibnetId": "1000288" },
+                          { "number": 289, "title": "L'Épée d'exécuteur", "lang": "VF", "sibnetId": "1000289" },
+                          { "number": 290, "title": "Chikara - Épisode 1", "lang": "VF", "sibnetId": "1000290" },
+                          { "number": 291, "title": "Chikara - Épisode 2", "lang": "VF", "sibnetId": "1000291" },
+                          { "number": 292, "title": "Chikara - Épisode 3", "lang": "VF", "sibnetId": "1000292" },
+                          { "number": 293, "title": "Chikara - Épisode 4", "lang": "VF", "sibnetId": "1000293" },
+                          { "number": 294, "title": "Chikara - Épisode 5", "lang": "VF", "sibnetId": "1000294" },
+                          { "number": 295, "title": "Chikara - Épisode Final", "lang": "VF", "sibnetId": "1000295" }
+                        ]
+                      },
+                      {
+                        "season_number": 14,
+                        "episodes": [
+                          { "number": 296, "title": "Naruto rejoint le champ de bataille !", "lang": "VF", "sibnetId": "1000296" },
+                          { "number": 297, "title": "Les Sentiments du père, l'amour de la mère", "lang": "VF", "sibnetId": "1000297" },
+                          { "number": 298, "title": "Enfin la rencontre ! Naruto contre Itachi !", "lang": "VF", "sibnetId": "1000298" },
+                          { "number": 299, "title": "Celui qui est reconnu !", "lang": "VF", "sibnetId": "1000299" },
+                          { "number": 300, "title": "Le Mizukage, les palourdes géantes et le mirage", "lang": "VF", "sibnetId": "1000300" },
+                          { "number": 301, "title": "Contradiction", "lang": "VF", "sibnetId": "1000301" },
+                          { "number": 302, "title": "Terreur : Jôki Boy !", "lang": "VF", "sibnetId": "1000302" },
+                          { "number": 303, "title": "Fantômes du passé", "lang": "VF", "sibnetId": "1000303" },
+                          { "number": 304, "title": "Technique de téléportation des âmes", "lang": "VF", "sibnetId": "1000304" },
+                          { "number": 305, "title": "Les Vengeurs", "lang": "VF", "sibnetId": "1000305" },
+                          { "number": 306, "title": "L'Œil du cœur", "lang": "VF", "sibnetId": "1000306" },
+                          { "number": 307, "title": "Disparition dans le brouillard", "lang": "VF", "sibnetId": "1000307" },
+                          { "number": 308, "title": "La Nuit des étoiles filantes", "lang": "VF", "sibnetId": "1000308" },
+                          { "number": 309, "title": "La Pluie d'été", "lang": "VF", "sibnetId": "1000309" },
+                          { "number": 310, "title": "La Neige temporaire", "lang": "VF", "sibnetId": "1000310" },
+                          { "number": 311, "title": "L'Aventure d'un ninja", "lang": "VF", "sibnetId": "1000311" },
+                          { "number": 312, "title": "Le Vieil Homme et l'Œil du Dragon", "lang": "VF", "sibnetId": "1000312" },
+                          { "number": 313, "title": "La Pluie suivie de la neige", "lang": "VF", "sibnetId": "1000313" },
+                          { "number": 314, "title": "Pluie de tristesse", "lang": "VF", "sibnetId": "1000314" },
+                          { "number": 315, "title": "Neige fondante", "lang": "VF", "sibnetId": "1000315" },
+                          { "number": 316, "title": "La Réanimation des morts", "lang": "VF", "sibnetId": "1000316" },
+                          { "number": 317, "title": "Rencontre avec Torune !", "lang": "VF", "sibnetId": "1000317" },
+                          { "number": 318, "title": "Un trou dans le cœur", "lang": "VF", "sibnetId": "1000318" },
+                          { "number": 319, "title": "L'Âme qui réside dans une marionnette", "lang": "VF", "sibnetId": "1000319" },
+                          { "number": 320, "title": "Cours, Omoi !", "lang": "VF", "sibnetId": "1000320" }
+                        ]
+                      },
+                      {
+                        "season_number": 15,
+                        "episodes": [
+                          { "number": 321, "title": "Les Renforts arrivent !", "lang": "VF", "sibnetId": "1000321" },
+                          { "number": 322, "title": "Madara Uchiwa", "lang": "VF", "sibnetId": "1000322" },
+                          { "number": 323, "title": "Les Cinq Kage rassemblés !", "lang": "VF", "sibnetId": "1000323" },
+                          { "number": 324, "title": "Le Masque incassable", "lang": "VF", "sibnetId": "1000324" },
+                          { "number": 325, "title": "Les Jinchûriki contre les Jinchûriki !", "lang": "VF", "sibnetId": "1000325" },
+                          { "number": 326, "title": "Yonbi, le Roi des Singes", "lang": "VF", "sibnetId": "1000326" },
+                          { "number": 327, "title": "Neuf queues", "lang": "VF", "sibnetId": "1000327" },
+                          { "number": 328, "title": "Kurama", "lang": "VF", "sibnetId": "1000328" },
+                          { "number": 329, "title": "Équipe de deux", "lang": "VF", "sibnetId": "1000329" },
+                          { "number": 330, "title": "Présage de victoire", "lang": "VF", "sibnetId": "1000330" },
+                          { "number": 331, "title": "Les Ténèbres qui voient tout", "lang": "VF", "sibnetId": "1000331" },
+                          { "number": 332, "title": "La Volonté de pierre", "lang": "VF", "sibnetId": "1000332" },
+                          { "number": 333, "title": "Les Risques de l'Edo Tensei", "lang": "VF", "sibnetId": "1000333" },
+                          { "number": 334, "title": "Combat de frères !", "lang": "VF", "sibnetId": "1000334" },
+                          { "number": 335, "title": "Le Domaine de chacun", "lang": "VF", "sibnetId": "1000335" },
+                          { "number": 336, "title": "Le Kabuto de Yakushi", "lang": "VF", "sibnetId": "1000336" },
+                          { "number": 337, "title": "Le Déclenchement d'Izanami", "lang": "VF", "sibnetId": "1000337" },
+                          { "number": 338, "title": "Izanagi et Izanami", "lang": "VF", "sibnetId": "1000338" },
+                          { "number": 339, "title": "Je t'aimerai toujours", "lang": "VF", "sibnetId": "1000339" },
+                          { "number": 340, "title": "Réanimation : Annulation !", "lang": "VF", "sibnetId": "1000340" },
+                          { "number": 341, "title": "La Résurrection d'Orochimaru !", "lang": "VF", "sibnetId": "1000341" },
+                          { "number": 342, "title": "Le Secret de la technique d'espace-temps", "lang": "VF", "sibnetId": "1000342" },
+                          { "number": 343, "title": "Qui es-tu ?", "lang": "VF", "sibnetId": "1000343" },
+                          { "number": 344, "title": "Obito et Madara", "lang": "VF", "sibnetId": "1000344" },
+                          { "number": 345, "title": "Je suis en enfer", "lang": "VF", "sibnetId": "1000345" },
+                          { "number": 346, "title": "Le Monde des rêves", "lang": "VF", "sibnetId": "1000346" },
+                          { "number": 347, "title": "L'Ombre qui rampe", "lang": "VF", "sibnetId": "1000347" },
+                          { "number": 348, "title": "La Naissance de l'Akatsuki", "lang": "VF", "sibnetId": "1000348" }
+                        ]
+                      },
+                      {
+                        "season_number": 16,
+                        "episodes": [
+                          { "number": 349, "title": "Le Masque qui cache le cœur", "lang": "VF", "sibnetId": "1000349" },
+                          { "number": 350, "title": "La Mort de Minato", "lang": "VF", "sibnetId": "1000350" },
+                          { "number": 351, "title": "Les Cellules de Hashirama", "lang": "VF", "sibnetId": "1000351" },
+                          { "number": 352, "title": "Le Ninja déserteur : Orochimaru", "lang": "VF", "sibnetId": "1000352" },
+                          { "number": 353, "title": "Le Sujet de recherche d'Orochimaru", "lang": "VF", "sibnetId": "1000353" },
+                          { "number": 354, "title": "Chacun son chemin", "lang": "VF", "sibnetId": "1000354" },
+                          { "number": 355, "title": "Le Sharingan ciblé", "lang": "VF", "sibnetId": "1000355" },
+                          { "number": 356, "title": "Ninja de Konoha", "lang": "VF", "sibnetId": "1000356" },
+                          { "number": 357, "title": "Un Anbu Uchiwa", "lang": "VF", "sibnetId": "1000357" },
+                          { "number": 358, "title": "Coup d'État", "lang": "VF", "sibnetId": "1000358" },
+                          { "number": 359, "title": "La Nuit de la tragédie", "lang": "VF", "sibnetId": "1000359" },
+                          { "number": 360, "title": "Supervision Jônin", "lang": "VF", "sibnetId": "1000360" },
+                          { "number": 361, "title": "L'Équipe 7", "lang": "VF", "sibnetId": "1000361" }
+                        ]
+                      },
+                      {
+                        "season_number": 17,
+                        "episodes": [
+                          { "number": 362, "title": "La Résolution de Kakashi", "lang": "VF", "sibnetId": "1000362" },
+                          { "number": 363, "title": "La Technique de l'Alliance Ninja !", "lang": "VF", "sibnetId": "1000363" },
+                          { "number": 364, "title": "Ceux qui sont reliés", "lang": "VF", "sibnetId": "1000364" },
+                          { "number": 365, "title": "Ceux qui dansent dans l'ombre", "lang": "VF", "sibnetId": "1000365" },
+                          { "number": 366, "title": "Ceux qui savent tout", "lang": "VF", "sibnetId": "1000366" },
+                          { "number": 367, "title": "Hashirama et Madara", "lang": "VF", "sibnetId": "1000367" },
+                          { "number": 368, "title": "L'Époque des Royaumes combattants", "lang": "VF", "sibnetId": "1000368" },
+                          { "number": 369, "title": "Mon véritable rêve", "lang": "VF", "sibnetId": "1000369" },
+                          { "number": 370, "title": "La Réponse de Sasuke", "lang": "VF", "sibnetId": "1000370" },
+                          { "number": 371, "title": "Le Trou", "lang": "VF", "sibnetId": "1000371" },
+                          { "number": 372, "title": "Ce qui remplit le vide", "lang": "VF", "sibnetId": "1000372" }
+                        ]
+                      },
+                      {
+                        "season_number": 18,
+                        "episodes": [
+                          { "number": 373, "title": "Le Rassemblement de l'équipe 7 !", "lang": "VF", "sibnetId": "1000373" },
+                          { "number": 374, "title": "La Nouvelle Triade", "lang": "VF", "sibnetId": "1000374" },
+                          { "number": 375, "title": "Kakashi contre Obito", "lang": "VF", "sibnetId": "1000375" },
+                          { "number": 376, "title": "La Directive du Vol de Kyûbi", "lang": "VF", "sibnetId": "1000376" },
+                          { "number": 377, "title": "Mecha-Naruto", "lang": "VF", "sibnetId": "1000377" },
+                          { "number": 378, "title": "Le Jinchûriki du Jûbi", "lang": "VF", "sibnetId": "1000378" },
+                          { "number": 379, "title": "La Brèche", "lang": "VF", "sibnetId": "1000379" },
+                          { "number": 380, "title": "Le Jour de la naissance de Naruto", "lang": "VF", "sibnetId": "1000380" },
+                          { "number": 381, "title": "L'Arbre Divin", "lang": "VF", "sibnetId": "1000381" },
+                          { "number": 382, "title": "Le Rêve d'un ninja", "lang": "VF", "sibnetId": "1000382" },
+                          { "number": 383, "title": "Poursuivre l'espoir", "lang": "VF", "sibnetId": "1000383" },
+                          { "number": 384, "title": "Un cœur rempli d'amis", "lang": "VF", "sibnetId": "1000384" },
+                          { "number": 385, "title": "Obito Uchiwa", "lang": "VF", "sibnetId": "1000385" },
+                          { "number": 386, "title": "Je te regarde", "lang": "VF", "sibnetId": "1000386" },
+                          { "number": 387, "title": "La Promesse tenue", "lang": "VF", "sibnetId": "1000387" },
+                          { "number": 388, "title": "Mon premier ami", "lang": "VF", "sibnetId": "1000388" },
+                          { "number": 389, "title": "La Sœur aînée admirée", "lang": "VF", "sibnetId": "1000389" },
+                          { "number": 390, "title": "La Décision de Hanabi", "lang": "VF", "sibnetId": "1000390" },
+                          { "number": 391, "title": "Madara Uchiwa se lève", "lang": "VF", "sibnetId": "1000391" },
+                          { "number": 392, "title": "Le Cœur caché", "lang": "VF", "sibnetId": "1000392" },
+                          { "number": 393, "title": "Le Vrai Final", "lang": "VF", "sibnetId": "1000393" }
+                        ]
+                      },
+                      {
+                        "season_number": 19,
+                        "episodes": [
+                          { "number": 394, "title": "L'Examen Chûnin nouveau", "lang": "VF", "sibnetId": "1000394" },
+                          { "number": 395, "title": "L'Examen Chûnin commence !", "lang": "VF", "sibnetId": "1000395" },
+                          { "number": 396, "title": "Les Trois Questions", "lang": "VF", "sibnetId": "1000396" },
+                          { "number": 397, "title": "Celui qui est digne d'être un leader", "lang": "VF", "sibnetId": "1000397" },
+                          { "number": 398, "title": "La Veille du deuxième examen", "lang": "VF", "sibnetId": "1000398" },
+                          { "number": 399, "title": "Survivre dans le désert", "lang": "VF", "sibnetId": "1000399" },
+                          { "number": 400, "title": "Les Utilisateurs de Taijutsu", "lang": "VF", "sibnetId": "1000400" },
+                          { "number": 401, "title": "Ceux qui recherchent l'ultime", "lang": "VF", "sibnetId": "1000401" },
+                          { "number": 402, "title": "Fuite contre Poursuite", "lang": "VF", "sibnetId": "1000402" },
+                          { "number": 403, "title": "Une volonté de fer", "lang": "VF", "sibnetId": "1000403" },
+                          { "number": 404, "title": "La Souffrance de Tenten", "lang": "VF", "sibnetId": "1000404" },
+                          { "number": 405, "title": "Les Deux Piégées", "lang": "VF", "sibnetId": "1000405" },
+                          { "number": 406, "title": "Mon propre lieu", "lang": "VF", "sibnetId": "1000406" },
+                          { "number": 407, "title": "Le Ninjutsu médical secret", "lang": "VF", "sibnetId": "1000407" },
+                          { "number": 408, "title": "La Marionnette maudite", "lang": "VF", "sibnetId": "1000408" },
+                          { "number": 409, "title": "Le Dos de deux personnes", "lang": "VF", "sibnetId": "1000409" },
+                          { "number": 410, "title": "Le Complot s'active", "lang": "VF", "sibnetId": "1000410" },
+                          { "number": 411, "title": "La Cible est le Bijuu", "lang": "VF", "sibnetId": "1000411" },
+                          { "number": 412, "title": "Le Jugement de Fû", "lang": "VF", "sibnetId": "1000412" },
+                          { "number": 413, "title": "Des sentiments transmis au futur", "lang": "VF", "sibnetId": "1000413" }
+                        ]
+                      },
+                      {
+                        "season_number": 20,
+                        "episodes": [
+                          { "number": 414, "title": "Au bord de la mort", "lang": "VF", "sibnetId": "1000414" },
+                          { "number": 415, "title": "Les Deux Mangekyô", "lang": "VF", "sibnetId": "1000415" },
+                          { "number": 416, "title": "La Formation de l'équipe Minato", "lang": "VF", "sibnetId": "1000416" },
+                          { "number": 417, "title": "Tu es mon soutien", "lang": "VF", "sibnetId": "1000417" },
+                          { "number": 418, "title": "La Chenille verte contre Madara", "lang": "VF", "sibnetId": "1000418" },
+                          { "number": 419, "title": "Le Printemps de la jeunesse", "lang": "VF", "sibnetId": "1000419" },
+                          { "number": 420, "title": "La Formation des huit portes célestes", "lang": "VF", "sibnetId": "1000420" },
+                          { "number": 421, "title": "Le Sage des Six Chemins", "lang": "VF", "sibnetId": "1000421" },
+                          { "number": 422, "title": "Ce qui est transmis", "lang": "VF", "sibnetId": "1000422" },
+                          { "number": 423, "title": "Le Rival de Naruto", "lang": "VF", "sibnetId": "1000423" },
+                          { "number": 424, "title": "Debout !", "lang": "VF", "sibnetId": "1000424" },
+                          { "number": 425, "title": "Le Rêve infini", "lang": "VF", "sibnetId": "1000425" },
+                          { "number": 426, "title": "Le Tsukuyomi Infini", "lang": "VF", "sibnetId": "1000426" },
+                          { "number": 427, "title": "Vers le monde des rêves", "lang": "VF", "sibnetId": "1000427" },
+                          { "number": 428, "title": "Le Lieu où appartient Tenten", "lang": "VF", "sibnetId": "1000428" },
+                          { "number": 429, "title": "Killer Bee Rappuden (1)", "lang": "VF", "sibnetId": "1000429" },
+                          { "number": 430, "title": "Killer Bee Rappuden (2)", "lang": "VF", "sibnetId": "1000430" },
+                          { "number": 431, "title": "Revoir ce sourire", "lang": "VF", "sibnetId": "1000431" },
+                          { "number": 432, "title": "Chroniques de Jiraya : Le Ninja raté", "lang": "VF", "sibnetId": "1000432" },
+                          { "number": 433, "title": "Chroniques de Jiraya : La Mission de recherche", "lang": "VF", "sibnetId": "1000433" },
+                          { "number": 434, "title": "Chroniques de Jiraya : L'Équipe Jiraya", "lang": "VF", "sibnetId": "1000434" },
+                          { "number": 435, "title": "Chroniques de Jiraya : L'Ordre des priorités", "lang": "VF", "sibnetId": "1000435" },
+                          { "number": 436, "title": "Chroniques de Jiraya : Le Masqué", "lang": "VF", "sibnetId": "1000436" },
+                          { "number": 437, "title": "Chroniques de Jiraya : Le Pouvoir scellé", "lang": "VF", "sibnetId": "1000437" },
+                          { "number": 438, "title": "Chroniques de Jiraya : Règles ou Camarades", "lang": "VF", "sibnetId": "1000438" },
+                          { "number": 439, "title": "Chroniques de Jiraya : L'Enfant de la prophétie", "lang": "VF", "sibnetId": "1000439" },
+                          { "number": 440, "title": "Chroniques de Jiraya : L'Oiseau en cage", "lang": "VF", "sibnetId": "1000440" },
+                          { "number": 441, "title": "Chroniques de Jiraya : Le Retour", "lang": "VF", "sibnetId": "1000441" },
+                          { "number": 442, "title": "Chroniques de Jiraya : Les Chemins mutuels", "lang": "VF", "sibnetId": "1000442" },
+                          { "number": 443, "title": "Chroniques de Jiraya : La Différence de pouvoir", "lang": "VF", "sibnetId": "1000443" },
+                          { "number": 444, "title": "Chroniques de Jiraya : La Désertion de Konoha", "lang": "VF", "sibnetId": "1000444" },
+                          { "number": 445, "title": "Chroniques de Jiraya : Les Poursuivants", "lang": "VF", "sibnetId": "1000445" },
+                          { "number": 446, "title": "Chroniques de Jiraya : L'Ombre", "lang": "VF", "sibnetId": "1000446" },
+                          { "number": 447, "title": "Chroniques de Jiraya : L'Akatsuki de l'ombre", "lang": "VF", "sibnetId": "1000447" },
+                          { "number": 448, "title": "Chroniques de Jiraya : Compagnons", "lang": "VF", "sibnetId": "1000448" },
+                          { "number": 449, "title": "Chroniques de Jiraya : Les Ninjas unis", "lang": "VF", "sibnetId": "1000449" },
+                          { "number": 450, "title": "Chroniques de Jiraya : Rivaux", "lang": "VF", "sibnetId": "1000450" },
+                          { "number": 451, "title": "Histoire d'Itachi : Naissance et Mort", "lang": "VF", "sibnetId": "1000451" },
+                          { "number": 452, "title": "Histoire d'Itachi : Le Génie", "lang": "VF", "sibnetId": "1000452" },
+                          { "number": 453, "title": "Histoire d'Itachi : La Douleur de vivre", "lang": "VF", "sibnetId": "1000453" },
+                          { "number": 454, "title": "Histoire d'Itachi : La Requête de Shisui", "lang": "VF", "sibnetId": "1000454" },
+                          { "number": 455, "title": "Histoire d'Itachi : Nuit de pleine lune", "lang": "VF", "sibnetId": "1000455" },
+                          { "number": 456, "title": "Histoire d'Itachi : L'Obscurité d'Akatsuki", "lang": "VF", "sibnetId": "1000456" },
+                          { "number": 457, "title": "Histoire d'Itachi : Partenaire", "lang": "VF", "sibnetId": "1000457" },
+                          { "number": 458, "title": "Histoire d'Itachi : La Vérité", "lang": "VF", "sibnetId": "1000458" },
+                          { "number": 459, "title": "La Fille du commencement", "lang": "VF", "sibnetId": "1000459" },
+                          { "number": 460, "title": "Kaguya Otsutsuki", "lang": "VF", "sibnetId": "1000460" },
+                          { "number": 461, "title": "Hagoromo et Hamura", "lang": "VF", "sibnetId": "1000461" },
+                          { "number": 462, "title": "Un passé fabriqué", "lang": "VF", "sibnetId": "1000462" },
+                          { "number": 463, "title": "Le Ninja le plus imprévisible !", "lang": "VF", "sibnetId": "1000463" },
+                          { "number": 464, "title": "Ninshû", "lang": "VF", "sibnetId": "1000464" },
+                          { "number": 465, "title": "Ashura et Indra", "lang": "VF", "sibnetId": "1000465" },
+                          { "number": 466, "title": "Le Voyage de l'épreuve", "lang": "VF", "sibnetId": "1000466" },
+                          { "number": 467, "title": "La Décision d'Ashura", "lang": "VF", "sibnetId": "1000467" },
+                          { "number": 468, "title": "Le Successeur", "lang": "VF", "sibnetId": "1000468" },
+                          { "number": 469, "title": "Une mission spéciale", "lang": "VF", "sibnetId": "1000469" },
+                          { "number": 470, "title": "Des sentiments connectés", "lang": "VF", "sibnetId": "1000470" },
+                          { "number": 471, "title": "Les Deux Ensemble", "lang": "VF", "sibnetId": "1000471" },
+                          { "number": 472, "title": "Tu seras sûrement...", "lang": "VF", "sibnetId": "1000472" },
+                          { "number": 473, "title": "Le Sharingan encore une fois", "lang": "VF", "sibnetId": "1000473" },
+                          { "number": 474, "title": "Félicitations", "lang": "VF", "sibnetId": "1000474" },
+                          { "number": 475, "title": "La Vallée de la fin", "lang": "VF", "sibnetId": "1000475" },
+                          { "number": 476, "title": "Le Dernier Combat", "lang": "VF", "sibnetId": "1000476" },
+                          { "number": 477, "title": "Naruto et Sasuke", "lang": "VF", "sibnetId": "1000477" },
+                          { "number": 478, "title": "Le Signe de réconciliation", "lang": "VF", "sibnetId": "1000478" },
+                          { "number": 479, "title": "Naruto Uzumaki !", "lang": "VF", "sibnetId": "1000479" }
+                        ]
+                      },
+                      {
+                        "season_number": 21,
+                        "episodes": [
+                          { "number": 480, "title": "Naruto - Hinata", "lang": "VF", "sibnetId": "1000480" },
+                          { "number": 481, "title": "Sasuke - Sakura", "lang": "VF", "sibnetId": "1000481" },
+                          { "number": 482, "title": "Gaara - Shikamaru", "lang": "VF", "sibnetId": "1000482" },
+                          { "number": 483, "title": "Jiraya - Kakashi", "lang": "VF", "sibnetId": "1000483" },
+                          { "number": 484, "title": "Histoire de Sasuke : Le Pervenche (1)", "lang": "VF", "sibnetId": "1000484" },
+                          { "number": 485, "title": "Histoire de Sasuke : Le Pervenche (2)", "lang": "VF", "sibnetId": "1000485" },
+                          { "number": 486, "title": "Histoire de Sasuke : Le Pervenche (3)", "lang": "VF", "sibnetId": "1000486" },
+                          { "number": 487, "title": "Histoire de Sasuke : Le Pervenche (4)", "lang": "VF", "sibnetId": "1000487" },
+                          { "number": 488, "title": "Histoire de Sasuke : Le Pervenche (5)", "lang": "VF", "sibnetId": "1000488" },
+                          { "number": 489, "title": "Histoire de Shikamaru (1)", "lang": "VF", "sibnetId": "1000489" },
+                          { "number": 490, "title": "Histoire de Shikamaru (2)", "lang": "VF", "sibnetId": "1000490" },
+                          { "number": 491, "title": "Histoire de Shikamaru (3)", "lang": "VF", "sibnetId": "1000491" },
+                          { "number": 492, "title": "Histoire de Shikamaru (4)", "lang": "VF", "sibnetId": "1000492" },
+                          { "number": 493, "title": "Histoire de Shikamaru (5)", "lang": "VF", "sibnetId": "1000493" },
+                          { "number": 494, "title": "Le Jour du mariage (1)", "lang": "VF", "sibnetId": "1000494" },
+                          { "number": 495, "title": "Le Jour du mariage (2)", "lang": "VF", "sibnetId": "1000495" },
+                          { "number": 496, "title": "Le Jour du mariage (3)", "lang": "VF", "sibnetId": "1000496" },
+                          { "number": 497, "title": "Le Jour du mariage (4)", "lang": "VF", "sibnetId": "1000497" },
+                          { "number": 498, "title": "Le Jour du mariage (5)", "lang": "VF", "sibnetId": "1000498" },
+                          { "number": 499, "title": "Le Jour du mariage (6)", "lang": "VF", "sibnetId": "1000499" },
+                          { "number": 500, "title": "Le Jour du mariage (7)", "lang": "VF", "sibnetId": "1000500" }
+]
+                    }
+                ]
+            },
+            {
+                "id": "mush. tensei",
+                "title": "Mushoku Tensei",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/gLKOYIMyKlUHW0SVdskhgf9C0yy.jpg",
+                "resume": "« Ici, je vais me transcender ! » Un anonyme de 34 ans, célibataire endurci, reclus et au chômage se fait écraser par un camion peu après avoir été chassé de la maison familiale. Quelle ne fut pas sa surprise lorsqu'il se réveilla bébé dans un monde d'épées et de magie ! Rudeus, comme il s'appelait désormais, jura alors de réussir sa deuxième vie et de tirer un trait sur l'immonde déchet qu'il avait été 34 ans durant. Dès son jeune âge, il nouera de nombreux liens dans ce nouveau monde, notamment une solide amitié avec trois fillettes, avant de partir pour une aventure aussi palpitante que périlleuse. Une seconde chance lui a été accordée… et elle ne sera pas de tout repos !",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Incarner, c'est renaître", "lang": "VF", "sibnetId": "4671027" },
+                            { "number": 2, "title": "Le foyer et les maîtres", "lang": "VF", "sibnetId": "4671030" },
+                            { "number": 3, "title": "Ami", "lang": "VF", "sibnetId": "4671032" },
+                            { "number": 4, "title": "Urgence", "lang": "VF", "sibnetId": "4671036" },
+                            { "number": 5, "title": "Un drame de la décennie", "lang": "VF", "sibnetId": "4671038" },
+                            { "number": 6, "title": "Une réunion", "lang": "VF", "sibnetId": "4671041" },
+                            { "number": 7, "title": "La princesse de vol à voile", "lang": "VF", "sibnetId": "4671047" },
+                            { "number": 8, "title": "Tournant décisif", "lang": "VF", "sibnetId": "4671052" },
+                            { "number": 9, "title": "Arrivée de la fille des sept grandes puissances", "lang": "VF", "sibnetId": "4671058" },
+                            { "number": 10, "title": "L'homme au manteau de dragon", "lang": "VF", "sibnetId": "4671063" },
+                            { "number": 11, "title": "Enfants et guerriers", "lang": "VF", "sibnetId": "4671068" },
+                            { "number": 12, "title": "Le voyage de retour", "lang": "VF", "sibnetId": "4671071" },
+                            { "number": 13, "title": "Les temps difficiles", "lang": "VF", "sibnetId": "4671075" },
+                            { "number": 14, "title": "Ne pas regarder en arrière", "lang": "VF", "sibnetId": "4671078" },
+                            { "number": 15, "title": "Éveil", "lang": "VF", "sibnetId": "4671080" },
+                            { "number": 16, "title": "La mission", "lang": "VF", "sibnetId": "4671081" },
+                            { "number": 17, "title": "Retrouvailles", "lang": "VF", "sibnetId": "4671084" },
+                            { "number": 18, "title": "Obscurités", "lang": "VF", "sibnetId": "4671086" },
+                            { "number": 19, "title": "Choix de route", "lang": "VF", "sibnetId": "4671087" },
+                            { "number": 20, "title": "Le jour de la naissance de ma petite sœur", "lang": "VF", "sibnetId": "4671088" },
+                            { "number": 21, "title": "Des comptes à rendre", "lang": "VF", "sibnetId": "4671089" },
+                            { "number": 22, "title": "Rêves et réalité", "lang": "VF", "sibnetId": "4671092" },
+                            { "number": 23, "title": "Regardez vers le bas et marchez", "lang": "VF", "sibnetId": "4671095" },
+                            { "number": 24, "title": "Eris the Goblin Slayer", "lang": "VF", "sibnetId": "5114213" }
+                        ]
+                    },
+                    {
+                        "season_number": 2,
+                        "episodes": [
+                            { "number": 0, "title": "Fitz", "lang": "VF", "sibnetId": "5243279" },
+                            { "number": 1, "title": "L'orphelin", "lang": "VF", "sibnetId": "5243289" },
+                            { "number": 2, "title": "La forêt de la mort", "lang": "VF", "sibnetId": "5249507" },
+                            { "number": 3, "title": "L'université de magie de Ranoa", "lang": "VF", "sibnetId": "5249510" },
+                            { "number": 4, "title": "Sujets d'attachement", "lang": "VF", "sibnetId": "5255614" },
+                            { "number": 5, "title": "Fille de noble", "lang": "VF", "sibnetId": "5255614" },
+                            { "number": 6, "title": "Je ne veux plus mourir", "lang": "VF", "sibnetId": "5255616" },
+                            { "number": 7, "title": "Le rapt et la commotion de la princesse", "lang": "VF", "sibnetId": "5255616" },
+                            { "number": 8, "title": "Le fiancé de la princesse", "lang": "VF", "sibnetId": "5277735" },
+                            { "number": 9, "title": "Le poisson blanc et la datte", "lang": "VF", "sibnetId": "5260626" },
+                            { "number": 10, "title": "Le labyrinthe de Ranoa", "lang": "VF", "sibnetId": "5277737" },
+                            { "number": 11, "title": "Choisir sa voie", "lang": "VF", "sibnetId": "5277740" },
+                            { "number": 12, "title": "Les fiançailles", "lang": "VF", "sibnetId": "5277751" },
+                            { "number": 13, "title": "Le voyage de noces", "lang": "VF", "sibnetId": "5277762" },
+                            { "number": 14, "title": "Le rapport", "lang": "VF", "sibnetId": "5282423" },
+                            { "number": 15, "title": "Le port", "lang": "VF", "sibnetId": "5519873" },
+                            { "number": 16, "title": "La veille du départ", "lang": "VF", "sibnetId": "5527541" },
+                            { "number": 17, "title": "Le labyrinthe de téléportation", "lang": "VF", "sibnetId": "5534589" },
+                            { "number": 18, "title": "Le gardien du cercle magique", "lang": "VF", "sibnetId": "5540510" },
+                            { "number": 19, "title": "Le combat désespéré", "lang": "VF", "sibnetId": "5547436" },
+                            { "number": 20, "title": "L'adieu", "lang": "VF", "sibnetId": "5552697" },
+                            { "number": 21, "title": "Le retour à la maison", "lang": "VF", "sibnetId": "5565322" },
+                            { "number": 22, "title": "Une famille unie", "lang": "VF", "sibnetId": "5574499" },
+                            { "number": 23, "title": "Le successeur", "lang": "VF", "sibnetId": "5582205" },
+                            { "number": 24, "title": "Mon foyer", "lang": "VF", "sibnetId": "5589753" },
+                            { "number": 25, "title": "", "lang": "VF", "sibnetId": "5597254" },
+                            { "number": 26, "title": "", "lang": "VF", "sibnetId": "5605561" }
+                        ]
+                    },
+                    {
+                        "season_number": 3,
+                        "episodes": [
+                            { "number": 1, "title": "Brûle, chien enragé", "lang": "VOSTFR", "sibnetId": "6234360" },
+                            { "number": 2, "title": "Aboye, chien enragé", "lang": "VOSTFR", "sibnetId": "6234375" },
+                            { "number": 3, "title": "Le retour de la vie quotidienne", "lang": "VOSTFR", "sibnetId": "6240509" },
+                            { "number": 4, "title": "Mage de niveau roi de l'eau", "lang": "VOSTFR", "sibnetId": "6246320" },
+
+                        ]
+                    }
+                ]                    
+
+
+            },
+            {
+                "id": "konosuba",
+                "title": "KONOSUBA -God's blessing on this wonderful world!",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/oRaOeQlwktbGSd2T31FYAcgHZlh.jpg",
+                "resume": "Kazuma Satō est un hikikomori qui ne vit que pour les mangas, les animes et les jeux vidéo. Il trouve la mort dans un accident de la circulation. Toutefois, son heure n'est pas encore arrivée puisqu'il se réveille face à une belle déesse qui lui propose de rejoindre un autre monde tout en apportant avec lui quelque chose ou quelqu'un qui lui tient à coeur. e sachant quoi répondre, notre héros choisit d'apporter avec lui cette déesse. Une fois sur place, il se retrouve chargé d'une mission qui consiste à vaincre le roi des démons. Ne se sentant pas concerné par cette demande, Kazuma décide de vivre une vie paisible en trouvant un travail pour se loger, se nourrir et vivre confortablement. Toutefois, cela ne durera pas longtemps car la déesse est là pour lui rappeler son rôle et l'armée du roi des démons compte passer à l'action…",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": " ", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]                    
+
+
+            },
+            {
+                "id": "firforc",
+                "title": "Fire Force",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/w39RbZShri0HsN1Vxm2vkNkC7Xo.jpg",
+                "resume": "Tokyo brûle, et dans toute la ville, des citoyens sont victimes de combustion spontanée. La Fire Force, brigade en charge d’éteindre ce brasier compte une nouvelle recrue dans ses rangs, le jeune Shinra. Au sein de la 8e brigade, il fera bon usage de ses pieds de feu pour empêcher la ville d’être réduite en cendres. Mais un secret brûlant et un passé ardent pourraient bien venir mettre le feu aux poudres !",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": " ", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]                    
+
+
+            },
+            {
+                "id": "solo leveling",
+                "title": "Solo Leveling",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/geCRueV3ElhRTr0xtJuEWJt6dJ1.jpg",
+                "resume": "Ce qui ne vous tue pas vous rend plus fort ! Mais ce dicton ne s'applique pas au chasseur le plus faible de toute l’humanité, Jinwoo Sung. Après avoir été mortellement blessé lorsqu’il est tombé par hasard sur un double donjon caché, Jinwoo est miraculeusement rescapé. Au bord de la mort, il entrevoit une quête et saisit une opportunité qui lui permet dès lors de gagner en puissance très rapidement. À présent, il souhaite découvrir les secrets de ses pouvoirs et du donjon qui les a engendrés.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": " ", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]                    
+
+
+            },
+            {
+                "id": "gachiakuta",
+                "title": "Gachiakuta",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/vjMiDjbvsASQQXqy4gjtt3ylniA.jpg",
+                "resume": "Dans une ville flottante où les riches se débarrassent de leurs déchets, comme de leurs habitants indésirables, Rudo est accusé de meurtre et jeté dans la Fosse où vivent des créatures mutantes. Pour survivre, il doit révéler un nouveau pouvoir et rejoindre les Nettoyeurs. Rudo ne cherche pas seulement à combattre les monstres, mais aussi les personnes corrompues qui l'ont jeté dans cet enfer.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": " ", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]                    
+
+
+            },
+            {
+                "id": "chainsaw-man",
+                "title": "Chainsaw Man",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/npdB6eFzizki0WaZ1OvKcJrWe97.jpg",
+                "resume": "Denji est un jeune homme qui croule sous les dettes laissées par son père. Avec son fidèle chien-démon à tronçonneuse Pochita, il chasse des démons pour survivre. Trahi et laissé pour mort, il fusionne avec Pochita pour devenir Chainsaw Man.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Chainsaw Man contre les zombies", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Bienvenue dans la Sécurité publique", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Meow-Meow, où es-tu ?", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Sauvetage", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Le goût du baiser", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Tuez Denji", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Le goût de l'alcool", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Feu de joie", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "De plus en plus de grabuge", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Coup de massue", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "MISSION DE DÉMOLITION", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Le coup de poing décisif", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "death-note",
+                "title": "Death Note",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/tCZFfYTIwrR7n94J6G14Y4hAFU6.jpg",
+                "resume": "Light Yagami, un lycéen surdoué, trouve un mystérieux carnet appartenant à un dieu de la mort du nom de Ryuk. Quiconque dont le nom est écrit dans le carnet meurt. Light décide de nettoyer le monde des criminels pour devenir le dieu d'un monde nouveau.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Renaissance", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Confrontation", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Transactions", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Poursuite", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Tactique", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Coup de force", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Nuit blanche", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Triangle", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Contact", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Soupçons", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Assaut", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Amour", "lang": "VF", "sibnetId": "" },
+                            { "number": 13, "title": "Spéculation", "lang": "VF", "sibnetId": "" },
+                            { "number": 14, "title": "Instabilité", "lang": "VF", "sibnetId": "" },
+                            { "number": 15, "title": "Pari", "lang": "VF", "sibnetId": "" },
+                            { "number": 16, "title": "Décision", "lang": "VF", "sibnetId": "" },
+                            { "number": 17, "title": "Exécution", "lang": "VF", "sibnetId": "" },
+                            { "number": 18, "title": "Pleins feux", "lang": "VF", "sibnetId": "" },
+                            { "number": 19, "title": "Matsuda", "lang": "VF", "sibnetId": "" },
+                            { "number": 20, "title": "Tollé", "lang": "VF", "sibnetId": "" },
+                            { "number": 21, "title": "Reprise", "lang": "VF", "sibnetId": "" },
+                            { "number": 22, "title": "Certitude", "lang": "VF", "sibnetId": "" },
+                            { "number": 23, "title": "Frénésie", "lang": "VF", "sibnetId": "" },
+                            { "number": 24, "title": "Renaissance", "lang": "VF", "sibnetId": "" },
+                            { "number": 25, "title": "Silence", "lang": "VF", "sibnetId": "" },
+                            { "number": 26, "title": "Renouveau", "lang": "VF", "sibnetId": "" },
+                            { "number": 27, "title": "Enlèvement", "lang": "VF", "sibnetId": "" },
+                            { "number": 28, "title": "Impatient", "lang": "VF", "sibnetId": "" },
+                            { "number": 29, "title": "Père", "lang": "VF", "sibnetId": "" },
+                            { "number": 30, "title": "Justice", "lang": "VF", "sibnetId": "" },
+                            { "number": 31, "title": "Transit", "lang": "VF", "sibnetId": "" },
+                            { "number": 32, "title": "Sélection", "lang": "VF", "sibnetId": "" },
+                            { "number": 33, "title": "Mépris", "lang": "VF", "sibnetId": "" },
+                            { "number": 34, "title": "Vigie", "lang": "VF", "sibnetId": "" },
+                            { "number": 35, "title": "Malveillance", "lang": "VF", "sibnetId": "" },
+                            { "number": 36, "title": "1.28", "lang": "VF", "sibnetId": "" },
+                            { "number": 37, "title": "Nouveau monde", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "steins-gate",
+                "title": "Steins;Gate",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/bj9lZLRey7ZTWNbA9o3L0tW0HfW.jpg",
+                "resume": "Rintaro Okabe, un savant fou autoproclamé, dirige un laboratoire improvisé à Akihabara avec ses amis. Ils découvrent par hasard qu'ils peuvent envoyer des messages dans le passé grâce à un four à micro-ondes modifié, déclenchant une série d'événements qui bouleversent le temps.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Point de départ et d'arrivée", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Paranoïa de la sautée temporelle", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Mélodie de la paranoïa", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Théorie de l'ordre des mains", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Stigma de la charge électrique", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Divergence papillon", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Singularité de la rupture", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Homéostasie illusoire", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Illusion de l'homéostasie", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Relation de causalité bi-valente", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Dogme du temps clos", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Dogme du temps ouvert", "lang": "VF", "sibnetId": "" },
+                            { "number": 13, "title": "Mésalliance métaphysique", "lang": "VF", "sibnetId": "" },
+                            { "number": 14, "title": "Mésalliance physique", "lang": "VF", "sibnetId": "" },
+                            { "number": 15, "title": "Rupture de l'équilibre", "lang": "VF", "sibnetId": "" },
+                            { "number": 16, "title": "Offrande irréversible", "lang": "VF", "sibnetId": "" },
+                            { "number": 17, "title": "Make", "lang": "VF", "sibnetId": "" },
+                            { "number": 18, "title": "And", "lang": "VF", "sibnetId": "" },
+                            { "number": 19, "title": "Magical Chain", "lang": "VF", "sibnetId": "" },
+                            { "number": 20, "title": "Enigma of North", "lang": "VF", "sibnetId": "" },
+                            { "number": 21, "title": "Paradoxe du porteur d'anneau", "lang": "VF", "sibnetId": "" },
+                            { "number": 22, "title": "Beams of Existence", "lang": "VF", "sibnetId": "" },
+                            { "number": 23, "title": "Open the Steins Gate", "lang": "VF", "sibnetId": "" },
+                            { "number": 24, "title": "Point de conclusion et de départ", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "cyberpunk-edgerunners",
+                "title": "Cyberpunk: Edgerunners",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/74Oo4hRy9xadpDZGqsWu2XqoNje.jpg",
+                "resume": "Dans un monde dystopique rongé par la technologie et la cybernétique à Night City, un jeune garçon des rues tente de survivre en devenant un edgerunner, un hors-la-loi mercenaire également connu sous le nom de cyberpunk.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Laisse-moi entrer", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Rest in Peace", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Fuite en avant", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Lucky You", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "All Eyes on Me", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Girl on Fire", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Stronger", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Stay", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Humanity", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Ma Liberté", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "86-eighty-six",
+                "title": "86: Eighty-Six",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/96mUvRlJBYOMBdbn30wtoh7QrpY.jpg",
+                "resume": "La République de Saint-Magnolia est en guerre contre son voisin l'Empire. La République affirme mener une guerre sans pertes humaines grâce à des drones autonomes, mais la réalité est tout autre : ces machines sont pilotées par les '86', des humains déchus exclus de la société.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Undertaker", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Spearhead", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Je ne veux pas mourir", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Véritable nom", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Je suis avec vous", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Jusqu'au bout", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Arigato", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Qu'est-ce qui reste", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Bienvenue", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Merci", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "San Magnolia", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "L'aube", "lang": "VF", "sibnetId": "" },
+                            { "number": 13, "title": "Bienvenue de retour", "lang": "VF", "sibnetId": "" },
+                            { "number": 14, "title": "Nom de code : Undertaker", "lang": "VF", "sibnetId": "" },
+                            { "number": 15, "title": "S'il vous plaît", "lang": "VF", "sibnetId": "" },
+                            { "number": 16, "title": "Perdu de vue", "lang": "VF", "sibnetId": "" },
+                            { "number": 17, "title": "Je ne peux pas m'empêcher d'y croire", "lang": "VF", "sibnetId": "" },
+                            { "number": 18, "title": "Le début de la fin", "lang": "VF", "sibnetId": "" },
+                            { "number": 19, "title": "La vallée de la mort", "lang": "VF", "sibnetId": "" },
+                            { "number": 20, "title": "En avant, mes frères", "lang": "VF", "sibnetId": "" },
+                            { "number": 21, "title": "Mon nom est", "lang": "VF", "sibnetId": "" },
+                            { "number": 22, "title": "Shin", "lang": "VF", "sibnetId": "" },
+                            { "number": 23, "title": "Hand in Hand", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "frieren",
+                "title": "Frieren",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/j8K7vgF3Kp5T6EwJvez9B4it6CB.jpg",
+                "resume": "L'elfe Frieren et ses vaillants compagnons ont vaincu le roi des démons et ramené la paix dans le royaume. Mais Frieren, dotée d'une longévité exceptionnelle, voit ses compagnons vieillir et mourir un à un, ce qui la pousse à entreprendre un nouveau voyage pour comprendre les humains.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "La fin du voyage", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Il n'y a qu'une seule façon de le dire", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Tuer de la magie", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "La terreur des âmes", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Un fossoyeur sans nom", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Le village de l'épée", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Comme si on se connaissait", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Un monstre nommé fléau", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Aura la guillotine", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Une force redoutable", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Le voyage se poursuit", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Héros légendaire", "lang": "VF", "sibnetId": "" },
+                            { "number": 13, "title": "Une potion de haine", "lang": "VF", "sibnetId": "" },
+                            { "number": 14, "title": "Privilège de jeune", "lang": "VF", "sibnetId": "" },
+                            { "number": 15, "title": "Devoirs de l'apprentie", "lang": "VF", "sibnetId": "" },
+                            { "number": 16, "title": "Amis pour la vie", "lang": "VF", "sibnetId": "" },
+                            { "number": 17, "title": "Prendre soin de soi", "lang": "VF", "sibnetId": "" },
+                            { "number": 18, "title": "Première classe", "lang": "VF", "sibnetId": "" },
+                            { "number": 19, "title": "Plan de l'examen", "lang": "VF", "sibnetId": "" },
+                            { "number": 20, "title": "Tueurs d'humains", "lang": "VF", "sibnetId": "" },
+                            { "number": 21, "title": "Le monde de la magie", "lang": "VF", "sibnetId": "" },
+                            { "number": 22, "title": "Futur en suspens", "lang": "VF", "sibnetId": "" },
+                            { "number": 23, "title": "Conquérir le donjon", "lang": "VF", "sibnetId": "" },
+                            { "number": 24, "title": "Réplique parfaite", "lang": "VF", "sibnetId": "" },
+                            { "number": 25, "title": "Combat mortel", "lang": "VF", "sibnetId": "" },
+                            { "number": 26, "title": "La hauteur de la magie", "lang": "VF", "sibnetId": "" },
+                            { "number": 27, "title": "L'ère des humains", "lang": "VF", "sibnetId": "" },
+                            { "number": 28, "title": "Là où l'aventure commence", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "oshi-no-ko",
+                "title": "Oshi no Ko",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/qoW507a8RoGbpILCxt2N87USn8H.jpg",
+                "resume": "Goro, un obstétricien, est assassiné et se réincarne mystérieusement en Aquamarine Hoshino, le fils de son idole de pop favorite, Ai Hoshino. Plongé dans le monde impitoyable du show-business, il découvre les sombres secrets qui s'y cachent.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Mère et enfants", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Premier choix", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Dramatisation", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Acteurs", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Émotion", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Bad-mouthing", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Buzz", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Premier", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "B.K.L.", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Pression", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Idole", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "one-punch-man",
+                "title": "One-Punch Man",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/uT8TZ9U9jsj5druZiHsm3zgVWtW.jpg",
+                "resume": "Saitama est un super-héros qui a tellement fait de musculation qu'il peut battre n'importe quel ennemi d'un seul coup de poing. Cependant, il s'ennuie profondément car il ne trouve aucun adversaire à sa mesure pour ressentir le frisson du combat.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "L'homme auvergnat", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Le cyborg solitaire", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "L'obsession de la puissance", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Le ninja moderne", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "L'ultime maître", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "La ville terrifiée", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "L'ultime disciple", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Le roi des profondeurs", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Justice inflexible", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Une crise sans précédent", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Le dominateur de l'univers", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Le héros le plus fort", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "mob-psycho-100",
+                "title": "Mob Psycho 100",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/vR7hwaGQ0ySRoq1WobiNRaPs4WO.jpg",
+                "resume": "Shigeo Kageyama, surnommé Mob, est un collégien doté de pouvoirs psychiques extraordinaires. Capable d'exorciser les esprits les plus puissants, il souhaite pourtant simplement mener une vie normale et gagner le cœur de sa camarade.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Le voyant autoproclamé Reigen Arataka et Mob", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Doutes sur les doutes", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Invitation à une sortie", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Abus de pouvoir", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "L'apparition de l'esper ultime", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Discorde", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Exaltation", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Frère aîné", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "L'organisation : Griffes", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Le combat", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Le maître et son disciple", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Mob et Reigen", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "parasyte",
+                "title": "Parasite",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/6wmdslutiodc6YIFJw3CXQDXUHk.jpg",
+                "resume": "Des parasites extraterrestres envahissent la Terre et prennent possession du corps des humains en pénétrant par les oreilles ou le nez. Shinichi Izumi, un lycéen, parvient à empêcher l'un d'eux de s'emparer de son cerveau, le forçant à se loger dans sa main droite.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Métamorphose", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Dans un corps inconnu", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Doux foyer", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Chemins croisés", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "L'Étranger", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Le soleil se lève aussi", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "L'innocence", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Freezing point", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Au-delà du bien et du mal", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Histoires de fantômes", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "L'oiseau bleu", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Cœur de pierre", "lang": "VF", "sibnetId": "" },
+                            { "number": 13, "title": "Bonjour, tristesse", "lang": "VF", "sibnetId": "" },
+                            { "number": 14, "title": "L'autosuffisance", "lang": "VF", "sibnetId": "" },
+                            { "number": 15, "title": "Du noir et du blanc", "lang": "VF", "sibnetId": "" },
+                            { "number": 16, "title": "Famille heureuse", "lang": "VF", "sibnetId": "" },
+                            { "number": 17, "title": "Le détective privé", "lang": "VF", "sibnetId": "" },
+                            { "number": 18, "title": "Les plus beaux jours de notre vie", "lang": "VF", "sibnetId": "" },
+                            { "number": 19, "title": "En plein jour", "lang": "VF", "sibnetId": "" },
+                            { "number": 20, "title": "Crime et châtiment", "lang": "VF", "sibnetId": "" },
+                            { "number": 21, "title": "La Folie", "lang": "VF", "sibnetId": "" },
+                            { "number": 22, "title": "Le calme avant la tempête", "lang": "VF", "sibnetId": "" },
+                            { "number": 23, "title": "La vie et la mort", "lang": "VF", "sibnetId": "" },
+                            { "number": 24, "title": "Parasyte", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "erased",
+                "title": "Erased",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/EljUwZJhpuYfVuSfqY8Pt1xxpH.jpg",
+                "resume": "Satoru Fujinuma est un auteur de manga en mal de reconnaissance qui possède une capacité mystérieuse appelée 'Redressement' : il est renvoyé dans le temps juste avant un événement tragique pour l'empêcher de se produire.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Vol de nuit", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "La plus belle des fêtes", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Le signe de fuite", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Réalisation", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Meurtre en suspens", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Le chemin du retour", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Trahison", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "La spirale infernale", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Le piège se referme", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Le fugitif", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Le futur en marche", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Le trésor", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "death-parade",
+                "title": "Death Parade",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/q95PaZEpjfNzmz3c0TFFAG6lc7S.jpg",
+                "resume": "Après la mort, il n'y a ni paradis ni enfer, mais un bar mystérieux où les défunts sont accueillis par un barman énigmatique nommé Decim. Ils doivent participer à des jeux mortels pour déterminer leur réincarnation ou leur damnation éternelle.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Death Seven Darts", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Death Reverse", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Rolling Ballad", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Naive Ishtar", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Death March", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "Cross Heart Attack", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "Alcoholic Dance", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Death Journey", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Counterfeit Attendant", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Story Teller", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Memento Mori", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Suicide Show", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "toradora",
+                "title": "Toradora!",
+                "image": "https://www.themoviedb.org/t/p/w600_and_h900_face/2Z52nZaAQt1P7XJtu8fNlMXgdps.jpg",
+                "resume": "Ryuuji Takasu est un lycéen doux au regard menaçant qui se lie d'amitié avec Taiga Aisaka, une petite fille au tempérament explosif surnommée la 'Tigre miniature'. Ensemble, ils décident de s'entraider pour séduire leurs meilleurs amis respectifs.",
+                "seasons": [
+                    {
+                        "season_number": 1,
+                        "episodes": [
+                            { "number": 1, "title": "Tigre et Dragon", "lang": "VF", "sibnetId": "" },
+                            { "number": 2, "title": "Ryuji et Taiga", "lang": "VF", "sibnetId": "" },
+                            { "number": 3, "title": "Ton chant d'amour", "lang": "VF", "sibnetId": "" },
+                            { "number": 4, "title": "Ce visage que tu fais", "lang": "VF", "sibnetId": "" },
+                            { "number": 5, "title": "Pour qui es-tu ?", "lang": "VF", "sibnetId": "" },
+                            { "number": 6, "title": "L'agresseur de l'ombre", "lang": "VF", "sibnetId": "" },
+                            { "number": 7, "title": "La piscine ouverte", "lang": "VF", "sibnetId": "" },
+                            { "number": 8, "title": "Pour le bien de qui ?", "lang": "VF", "sibnetId": "" },
+                            { "number": 9, "title": "Let's Go to the Ocean", "lang": "VF", "sibnetId": "" },
+                            { "number": 10, "title": "Feu d'artifice", "lang": "VF", "sibnetId": "" },
+                            { "number": 11, "title": "Le festival d'Orthez", "lang": "VF", "sibnetId": "" },
+                            { "number": 12, "title": "Le festival du lycée Ohashi, partie 1", "lang": "VF", "sibnetId": "" },
+                            { "number": 13, "title": "Le festival du lycée Ohashi, partie 2", "lang": "VF", "sibnetId": "" },
+                            { "number": 14, "title": "Le festival du lycée Ohashi, partie 3", "lang": "VF", "sibnetId": "" },
+                            { "number": 15, "title": "Les étoiles sont lointaines", "lang": "VF", "sibnetId": "" },
+                            { "number": 16, "title": "Un pas en avant", "lang": "VF", "sibnetId": "" },
+                            { "number": 17, "title": "Mercure rétrograde", "lang": "VF", "sibnetId": "" },
+                            { "number": 18, "title": "Sous le sapin de Noël", "lang": "VF", "sibnetId": "" },
+                            { "number": 19, "title": "La nuit de Noël", "lang": "VF", "sibnetId": "" },
+                            { "number": 20, "title": "Impermanence infinie", "lang": "VF", "sibnetId": "" },
+                            { "number": 21, "title": "Pas de quoi rougir", "lang": "VF", "sibnetId": "" },
+                            { "number": 22, "title": "Des scènes du passé", "lang": "VF", "sibnetId": "" },
+                            { "number": 23, "title": "La route du droit chemin", "lang": "VF", "sibnetId": "" },
+                            { "number": 24, "title": "Confession", "lang": "VF", "sibnetId": "" },
+                            { "number": 25, "title": "Toradora !", "lang": "VF", "sibnetId": "" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+
+
+
+        /* --- ETAT DE L'APPLICATION --- */
+        let currentAnimeId = null;
+        let activeTabSeasonIndex = 0; 
+        
+        let playerSeasonIndex = 0; 
+        let playerEpisodeIndex = 0; 
+
+        /* --- ROUTER --- */
+        const router = {
+            _showView(viewId) {
+                document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active-view'));
+                document.getElementById(viewId).classList.add('active-view');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+            home() {
+                document.getElementById('search-input').value = "";
+                renderHome(database);
+                this._showView('view-home');
+                document.getElementById('player-wrapper').innerHTML = ""; // Coupe la vidéo
+            },
+            anime(animeId) {
+                currentAnimeId = animeId;
+                activeTabSeasonIndex = 0; 
+                renderAnimeDetail();
+                this._showView('view-anime');
+                document.getElementById('player-wrapper').innerHTML = ""; // Coupe la vidéo
+            },
+            player(animeId, sIndex, epIndex) {
+                currentAnimeId = animeId;
+                playerSeasonIndex = sIndex;
+                playerEpisodeIndex = epIndex;
+                document.getElementById('player-to-anime-btn').onclick = () => this.anime(animeId);
+                updatePlayerView();
+                this._showView('view-player');
+            }
+        };
+
+        /* --- RECHERCHE --- */
+        function handleSearch(query) {
+            router._showView('view-home');
+            const cleanQuery = query.toLowerCase().trim();
+            const filtered = database.filter(a => a.title.toLowerCase().includes(cleanQuery));
+            renderHome(filtered);
+        }
+
+        /* --- RENDU ACCUEIL --- */
+        function renderHome(list) {
+            const grid = document.getElementById('home-grid');
+            grid.innerHTML = "";
+            if (list.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--text-sub); font-size: 18px;">Aucun résultat trouvé.</div>`;
+                return;
+            }
+            list.forEach(anime => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => router.anime(anime.id);
+                card.innerHTML = `
+                    <div class="card-img-wrapper">
+                        <img src="${anime.image}" alt="${anime.title}" loading="lazy">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">${anime.title}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* --- RENDU PAGE ANIME (ONGLETS) --- */
+        function renderAnimeDetail() {
+            const anime = database.find(a => a.id === currentAnimeId);
+            const container = document.getElementById('anime-detail-content');
+            
+            let tabsHtml = `<div class="tabs-container">`;
+            anime.seasons.forEach((season, index) => {
+                const isActive = index === activeTabSeasonIndex ? 'active' : '';
+                tabsHtml += `<button class="tab-btn ${isActive}" onclick="changeSeasonTab(${index})">Saison ${season.season_number}</button>`;
+            });
+            tabsHtml += `</div>`;
+            tabsHtml += `<div id="episodes-container" class="episodes-grid"></div>`;
+
+            container.innerHTML = `
+                <div class="anime-detail-header">
+                    <img src="${anime.image}" alt="${anime.title}" class="detail-poster">
+                    <div class="anime-info">
+                        <h2>${anime.title}</h2>
+                        <p class="anime-resume">${anime.resume}</p>
+                    </div>
+                </div>
+                <h3 class="section-title" style="font-size: 28px;">Épisodes</h3>
+                ${tabsHtml}
+            `;
+            renderEpisodesForTab();
+        }
+
+        function changeSeasonTab(index) {
+            activeTabSeasonIndex = index;
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            renderEpisodesForTab();
+        }
+
+        function renderEpisodesForTab() {
+            const anime = database.find(a => a.id === currentAnimeId);
+            const season = anime.seasons[activeTabSeasonIndex];
+            const epContainer = document.getElementById('episodes-container');
+            
+            let html = "";
+            season.episodes.forEach((ep, epIndex) => {
+                html += `
+                    <div class="episode-card" onclick="router.player('${anime.id}', ${activeTabSeasonIndex}, ${epIndex})">
+                        <div class="ep-info">
+                            <span class="ep-num">Épisode ${ep.number}</span>
+                            <span class="ep-title">${ep.title}</span>
+                        </div>
+                        <span class="badge ${ep.lang.toLowerCase()}">${ep.lang}</span>
+                    </div>
+                `;
+            });
+            epContainer.innerHTML = html;
+        }
+
+        /* --- LOGIQUE DU LECTEUR ET SYSTEME ANTI-FLAG --- */
+        function updatePlayerView() {
+            const anime = database.find(a => a.id === currentAnimeId);
+            const season = anime.seasons[playerSeasonIndex];
+            const episode = season.episodes[playerEpisodeIndex];
+
+            document.getElementById('player-anime-name').textContent = anime.title;
+            document.getElementById('player-ep-info').textContent = `SAISON ${season.season_number} • ÉPISODE ${episode.number} • ${episode.lang}`;
+            
+            // ==========================================
+            // SYSTEME ANTI-FLAG SIBNET (BYPASS FRONTEND)
+            // ==========================================
+            const wrapper = document.getElementById('player-wrapper');
+            // On détruit l'ancien lecteur pour vider la mémoire et éviter la détection d'historique
+            wrapper.innerHTML = ""; 
+            
+            // On recrée l'iframe proprement avec des règles strictes
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://video.sibnet.ru/shell.php?videoid=${episode.sibnetId}`;
+            iframe.setAttribute('allowfullscreen', 'true');
+            iframe.style.position = "absolute";
+            iframe.style.top = "0";
+            iframe.style.left = "0";
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+            iframe.style.border = "0";
+            
+            // Attributs cruciaux pour empêcher Sibnet de savoir sur quel site vous êtes
+            iframe.setAttribute('referrerpolicy', 'no-referrer');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+            
+            wrapper.appendChild(iframe);
+            // ==========================================
+
+            // Générer les pilules de Saison
+            const seasonPills = document.getElementById('player-season-pills');
+            seasonPills.innerHTML = "";
+            anime.seasons.forEach((s, idx) => {
+                const isActive = idx === playerSeasonIndex ? 'active' : '';
+                seasonPills.innerHTML += `<div class="pill ${isActive}" onclick="jumpToSeason(${idx})">S${s.season_number}</div>`;
+            });
+
+            // Générer les pilules d'Épisode
+            const epPills = document.getElementById('player-episode-pills');
+            epPills.innerHTML = "";
+            season.episodes.forEach((e, idx) => {
+                const isActive = idx === playerEpisodeIndex ? 'active' : '';
+                epPills.innerHTML += `<div class="pill ${isActive}" onclick="jumpToEpisode(${idx})">${e.number}</div>`;
+            });
+
+            // Centrer la pilule active
+            setTimeout(() => {
+                const activeEpPill = epPills.querySelector('.active');
+                if(activeEpPill) activeEpPill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }, 50);
+
+            // Gérer l'état des boutons Précédent/Suivant
+            const isFirst = (playerSeasonIndex === 0 && playerEpisodeIndex === 0);
+            const isLast = (playerSeasonIndex === anime.seasons.length - 1 && playerEpisodeIndex === season.episodes.length - 1);
+            
+            document.getElementById('btn-prev').disabled = isFirst;
+            document.getElementById('btn-next').disabled = isLast;
+        }
+
+        function jumpToSeason(sIndex) {
+            playerSeasonIndex = sIndex;
+            playerEpisodeIndex = 0; 
+            updatePlayerView();
+        }
+
+        function jumpToEpisode(epIndex) {
+            playerEpisodeIndex = epIndex;
+            updatePlayerView();
+        }
+
+        function navigateEpisode(direction) {
+            const anime = database.find(a => a.id === currentAnimeId);
+            let season = anime.seasons[playerSeasonIndex];
+
+            if (direction === 1) { 
+                if (playerEpisodeIndex < season.episodes.length - 1) {
+                    playerEpisodeIndex++;
+                } else if (playerSeasonIndex < anime.seasons.length - 1) {
+                    playerSeasonIndex++;
+                    playerEpisodeIndex = 0;
+                }
+            } else if (direction === -1) { 
+                if (playerEpisodeIndex > 0) {
+                    playerEpisodeIndex--;
+                } else if (playerSeasonIndex > 0) {
+                    playerSeasonIndex--;
+                    playerEpisodeIndex = anime.seasons[playerSeasonIndex].episodes.length - 1;
+                }
+            }
+            updatePlayerView();
+        }
+
+        /* --- INITIALISATION --- */
+        renderHome(database);
+    </script>
+</body>
+</html>
