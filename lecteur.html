@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORCO STREAM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg-body: #050508;
+            --sidebar-width: 80px;
+            --accent: #00f2fe;
+            --highlight: #4facfe;
+            --text-main: #ffffff;
+            --text-sub: #a0aec0;
+            --glass-bg: rgba(18, 22, 36, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.15);
+            --glass-blur: blur(20px) saturate(180%);
+            --shadow-glass: 0 20px 50px rgba(0, 0, 0, 0.7);
+            --transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(0, 242, 254, 0.06), transparent 40%),
+                radial-gradient(circle at 80% 60%, rgba(79, 172, 254, 0.05), transparent 40%),
+                radial-gradient(circle at 10% 80%, rgba(139, 92, 246, 0.04), transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 25px 0;
+            background: rgba(8, 10, 16, 0.6);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .sidebar-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--highlight));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #000;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+            transition: var(--transition);
+        }
+
+        .sidebar-logo:hover {
+            transform: scale(1.08);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .nav-icon-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+            border: none;
+        }
+
+        .nav-icon-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        .nav-icon-btn:hover, .nav-icon-btn.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-icon-btn.active {
+            color: var(--accent);
+            box-shadow: inset 0 0 12px rgba(0, 242, 254, 0.15);
+        }
+
+        .sidebar-user {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid var(--glass-highlight);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--accent);
+        }
+
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header.top-bar {
+            padding: 20px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(5, 5, 8, 0.7);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 46px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            background: rgba(0, 242, 254, 0.05);
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        main {
+            padding: 30px 50px 60px 50px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-view {
+            display: none;
+            animation: viewEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes viewEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-view { display: block; }
+
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            border-radius: 28px;
+            overflow: hidden;
+            margin-bottom: 45px;
+            display: flex;
+            align-items: flex-end;
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.65) contrast(1.1);
+            transform: scale(1.02);
+            transition: transform 10s ease;
+        }
+
+        .hero-banner:hover .hero-bg {
+            transform: scale(1.06);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(5, 5, 8, 0.1) 0%, rgba(5, 5, 8, 0.8) 60%, rgba(5, 5, 8, 0.98) 100%),
+                        linear-gradient(90deg, rgba(5, 5, 8, 0.9) 0%, rgba(5, 5, 8, 0.4) 50%, transparent 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .hero-tag {
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero-tag::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .hero-title {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .meta-rating {
+            color: #facc15;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .meta-badge {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--highlight));
+            color: #000;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 242, 254, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-3px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title span.kanji {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 900;
+            opacity: 0.8;
+        }
+
+        .genres-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 45px;
+        }
+
+        .genre-card {
+            height: 95px;
+            border-radius: 18px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            display: flex;
+            align-items: flex-end;
+            padding: 15px;
+        }
+
+        .genre-card img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5);
+            transition: transform 0.5s ease;
+        }
+
+        .genre-card:hover img {
+            transform: scale(1.15);
+            filter: brightness(0.7);
+        }
+
+        .genre-card span {
+            position: relative;
+            z-index: 2;
+            font-weight: 800;
+            font-size: 15px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .genre-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+        }
+
+        .resume-banner {
+            border-radius: 20px;
+            padding: 20px 28px;
+            margin-bottom: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .resume-banner:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,242,254,0.1);
+        }
+
+        .resume-info { display: flex; flex-direction: column; gap: 6px; }
+        .resume-badge { background: var(--accent); color: #000; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; width: max-content; }
+        .resume-title { font-size: 18px; font-weight: 800; }
+        .resume-ep { color: var(--text-sub); font-size: 13px; font-weight: 600; }
+        .resume-play { background: #fff; color: #000; width: 48px; height: 48px; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; padding-left: 3px; box-shadow: 0 8px 20px rgba(255,255,255,0.2); transition: var(--transition); }
+        .resume-banner:hover .resume-play { transform: scale(1.1); box-shadow: 0 10px 25px rgba(255,255,255,0.4); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 242, 254, 0.15);
+            border-color: var(--accent);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 140%;
+            overflow: hidden;
+        }
+
+        .card img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover img { transform: scale(1.08); }
+
+        .card-content {
+            padding: 16px 14px;
+            background: linear-gradient(to top, rgba(5,5,8,0.98) 0%, rgba(5,5,8,0.7) 60%, transparent 100%);
+            position: absolute;
+            bottom: 0; left: 0; width: 100%;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.03); color: var(--text-sub); border: 1px solid var(--glass-border);
+            padding: 12px 24px; border-radius: 30px; cursor: pointer; margin-bottom: 30px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 8px; transition: var(--transition); backdrop-filter: blur(10px);
+            font-size: 13px;
+        }
+
+        .btn-back:hover { background: var(--accent); color: #000; border-color: transparent; box-shadow: 0 0 20px rgba(0, 242, 254, 0.3); transform: translateX(-4px); }
+
+        .anime-detail-header { display: flex; gap: 40px; margin-bottom: 40px; padding: 35px; border-radius: 24px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); }
+        .detail-poster { width: 250px; border-radius: 18px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); flex-shrink: 0; border: 1px solid var(--glass-border); }
+        .anime-info h2 { font-size: 42px; font-weight: 900; margin-bottom: 20px; line-height: 1.1; letter-spacing: -1px; }
+        .anime-resume { font-size: 15px; color: var(--text-sub); line-height: 1.7; }
+
+        .tabs-container { display: flex; gap: 12px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .tab-btn { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: var(--text-sub); padding: 12px 24px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: var(--transition); white-space: nowrap; backdrop-filter: blur(10px); font-size: 13px; }
+        .tab-btn:hover { background: rgba(255,255,255,0.08); color: white; }
+        .tab-btn.active { background: var(--accent); color: #000; border-color: transparent; box-shadow: 0 5px 20px rgba(0, 242, 254, 0.25); }
+
+        .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .episode-card { padding: 16px 20px; border-radius: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: var(--transition); background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); }
+        .episode-card:hover { background: rgba(0, 242, 254, 0.05); border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); }
+        .ep-info { display: flex; flex-direction: column; gap: 6px; }
+        .ep-num { font-size: 12px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .ep-title { font-size: 15px; font-weight: 700; color: #fff;}
+        .badges-container { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;}
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 900; border: 1px solid rgba(255,255,255,0.1); }
+        .badge.vf { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+        .badge.vostfr { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
+
+        .player-layout { max-width: 1100px; margin: 0 auto; }
+        .player-top-info { text-align: center; margin-bottom: 20px; }
+        .player-top-info h2 { font-size: 28px; font-weight: 900; margin-bottom: 6px; letter-spacing: -1px; }
+        .player-top-info p { color: var(--accent); font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
+
+        .controls-row { display: flex; justify-content: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+        .control-group { display: flex; background: rgba(0,0,0,0.4); border-radius: 14px; padding: 5px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
+        .control-btn { background: transparent; border: none; color: var(--text-sub); padding: 8px 20px; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; transition: var(--transition); text-transform: uppercase; }
+        .control-btn:hover:not(:disabled) { color: #fff; }
+        .control-btn.active { background: rgba(255,255,255,0.12); color: #fff; box-shadow: inset 0 2px 8px rgba(255,255,255,0.08); }
+        .control-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+        .player-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 20px; overflow: hidden; margin-bottom: 30px; border: 1px solid var(--glass-highlight); box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(0,242,254,0.1); }
+        .player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+        .command-center { padding: 30px; border-radius: 24px; display: flex; flex-direction: column; gap: 24px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 16px; }
+        .nav-btn { flex: 1; background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--glass-border); padding: 16px; border-radius: 16px; font-weight: 800; font-size: 13px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; }
+        .nav-btn:hover:not(:disabled) { background: var(--accent); color: #000; border-color: transparent; box-shadow: 0 8px 25px rgba(0, 242, 254, 0.3); transform: translateY(-2px); }
+        .nav-btn:disabled { opacity: 0.15; cursor: not-allowed; }
+
+        .quick-select-row { display: flex; align-items: center; gap: 16px; }
+        .quick-select-label { font-weight: 900; color: var(--text-sub); width: 80px; font-size: 12px; text-transform: uppercase; }
+        .pill-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+        .pill-container::-webkit-scrollbar { display: none; }
+        .pill { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: var(--text-sub); padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 700; cursor: pointer; transition: var(--transition); white-space: nowrap; }
+        .pill:hover { background: rgba(255,255,255,0.1); color: white; }
+        .pill.active { background: #fff; color: #000; border-color: transparent; box-shadow: 0 4px 15px rgba(255,255,255,0.3); }
+
+        @media (max-width: 900px) {
+            :root { var(--sidebar-width): 0px; }
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: 60px; top: auto; bottom: 0; flex-direction: row; padding: 0 20px; border-right: none; border-top: 1px solid var(--glass-border); }
+            .sidebar-logo, .sidebar-user { display: none; }
+            .sidebar-nav { flex-direction: row; justify-content: space-around; width: 100%; }
+            .main-wrapper { margin-left: 0; width: 100%; padding-bottom: 70px; }
+            main { padding: 20px; }
+            header.top-bar { padding: 15px 20px; }
+            .hero-banner { height: 350px; padding: 20px; }
+            .hero-title { font-size: 28px; }
+            .anime-detail-header { flex-direction: column; padding: 20px; }
+            .detail-poster { width: 100%; max-width: 220px; margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo" onclick="router.home()">O</div>
+        <nav class="sidebar-nav">
+            <button class="nav-icon-btn active" title="Accueil" onclick="router.home()">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </button>
+            <button class="nav-icon-btn" title="Rechercher" onclick="document.getElementById('search-input').focus()">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
+        </nav>
+        <div class="sidebar-user">L</div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="top-bar">
+            <div class="brand-name" onclick="router.home()" style="cursor:pointer;">ORCO STREAM</div>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" class="search-input" placeholder="Rechercher une œuvre..." oninput="handleSearch(this.value)">
+            </div>
+        </header>
+
+        <main id="app">
+            <div id="view-home" class="page-view active-view">
+                <div id="hero-container"></div>
+                <div id="resume-container"></div>
+
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="kanji">ジャンル</span> Genres
+                    </div>
+                </div>
+                <div class="genres-grid" id="genres-grid"></div>
+
+                <div class="section-header">
+                    <div class="section-title">Découvrir</div>
+                </div>
+                <div class="grid" id="home-grid"></div>
+            </div>
+
+            <div id="view-anime" class="page-view">
+                <button class="btn-back" onclick="router.home()">← Retour à l'accueil</button>
+                <div id="anime-detail-content"></div>
+            </div>
+
+            <div id="view-player" class="page-view">
+                <button class="btn-back" id="player-to-anime-btn">← Fiche de l'œuvre</button>
+                
+                <div class="player-layout">
+                    <div class="player-top-info">
+                        <h2 id="player-anime-name"></h2>
+                        <p id="player-ep-info"></p>
+                    </div>
+
+                    <div class="controls-row">
+                        <div class="control-group" id="lang-selector">
+                            <button class="control-btn" id="lang-vf" onclick="switchLang('vf')">VF</button>
+                            <button class="control-btn" id="lang-vostfr" onclick="switchLang('vostfr')">VOSTFR</button>
+                        </div>
+                        <div class="control-group" id="server-selector">
+                            <button class="control-btn" id="server-sibnet" onclick="switchServer('sibnet')">SIBNET</button>
+                            <button class="control-btn" id="server-vidmoly" onclick="switchServer('vidmoly')">VIDMOLY</button>
+                        </div>
+                    </div>
+
+                    <div class="player-wrapper" id="player-wrapper"></div>
+
+                    <div class="command-center">
+                        <div class="nav-buttons" id="nav-buttons">
+                            <button id="btn-prev" class="nav-btn" onclick="navigateEpisode(-1)">◄ Précédent</button>
+                            <button id="btn-next" class="nav-btn" onclick="navigateEpisode(1)">Suivant ►</button>
+                        </div>
+
+                        <div class="quick-select-row" id="row-saisons-films">
+                            <span class="quick-select-label" id="label-cat">Saison</span>
+                            <div class="pill-container" id="player-cat-pills"></div>
+                        </div>
+
+                        <div class="quick-select-row" id="row-episodes">
+                            <span class="quick-select-label">Épisode</span>
+                            <div class="pill-container" id="player-item-pills"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="database.json"></script>
+    <script>
+        function getAnime(id) { return database.find(a => a.id === id) || null; }
+
+        function getItem(anime, context) {
+            if (!anime) return null;
+            if (context.type === 'film') {
+                return (anime.films && anime.films[context.itemIndex]) ? anime.films[context.itemIndex] : null;
+            }
+            const season = (anime.seasons && anime.seasons[context.index]) ? anime.seasons[context.index] : null;
+            return (season && season.episodes && season.episodes[context.itemIndex]) ? season.episodes[context.itemIndex] : null;
+        }
+
+        function hasLang(item, lang) {
+            if (!item || !item[lang]) return false;
+            const l = item[lang];
+            if (typeof l === 'string') return l.trim() !== '';
+            return Boolean((l.sibnet && l.sibnet.trim()) || (l.vidmoly && l.vidmoly.trim()));
+        }
+
+        function hasServer(item, lang, server) {
+            if (!hasLang(item, lang)) return false;
+            const l = item[lang];
+            if (typeof l === 'string') return server === 'sibnet' && l.trim() !== '';
+            return Boolean(l[server] && l[server].trim() !== '');
+        }
+
+        let currentAnimeId = null;
+        let activeTabId = 's-0';
+        
+        let playerContext = { type: 'season', index: 0, itemIndex: 0 };
+        let playerLang = 'vf';
+        let playerServer = 'sibnet';
+
+        function saveProgress() {
+            if(!currentAnimeId) return;
+            const data = { animeId: currentAnimeId, context: playerContext };
+            localStorage.setItem('orco_progress', JSON.stringify(data));
+        }
+
+        function renderHeroBanner() {
+            const container = document.getElementById('hero-container');
+            if (!database || database.length === 0) { container.innerHTML = ''; return; }
+            
+            const randomIndex = Math.floor(Math.random() * database.length);
+            const anime = database[randomIndex];
+            
+            const detectedGenres = extractGenres(anime.resume || '');
+            const genreTagsHtml = detectedGenres.map(g => `<span class="meta-badge">${g}</span>`).join('');
+
+            container.innerHTML = `
+                <div class="hero-banner">
+                    <img src="${anime.image || ''}" class="hero-bg" alt="${anime.title}">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <div class="hero-tag">À LA UNE</div>
+                        <h1 class="hero-title">${anime.title}</h1>
+                        <div class="hero-meta">
+                            <span class="meta-rating">★ 8.5</span>
+                            <span class="meta-badge">TV</span>
+                            ${genreTagsHtml}
+                        </div>
+                        <p class="hero-desc">${anime.resume || 'Aucune description disponible.'}</p>
+                        <div class="hero-actions">
+                            <button class="btn-primary" onclick="router.anime('${anime.id}')">▶ Regarder</button>
+                            <button class="btn-secondary" onclick="router.anime('${anime.id}')">Détails</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function extractGenres(resume) {
+            const genres = [];
+            const text = resume.toLowerCase();
+            if (text.includes('bataille') || text.includes('combat') || text.includes('pouvoir') || text.includes('guerre')) genres.push('Action');
+            if (text.includes('aventure') || text.includes('voyage') || text.includes('monde')) genres.push('Aventure');
+            if (text.includes('jeu') || text.includes('expérience') || text.includes('futur')) genres.push('Sci-Fi');
+            if (text.includes('lycée') || text.includes('école') || text.includes('drôle')) genres.push('Comédie');
+            if (genres.length === 0) genres.push('Action', 'Aventure');
+            return genres.slice(0, 3);
+        }
+
+        function renderGenresGrid() {
+            const container = document.getElementById('genres-grid');
+            const genreList = [
+                { name: 'Action', img: 'https://www.themoviedb.org/t/p/w600_and_h900_face/cEnxvrGIGwLz7ZfCx3g8oULJxrr.jpg' },
+                { name: 'Aventure', img: 'https://www.themoviedb.org/t/p/w600_and_h900_face/y4N1MW2LjaO4l5dXCvnJvVWL345.jpg' },
+                { name: 'Comédie', img: 'https://image.tmdb.org/t/p/w500/rt1gmKCONtlcJoBfNvNhcLQziLH.jpg' },
+                { name: 'Fantastique', img: 'https://www.themoviedb.org/t/p/w600_and_h900_face/nGuTtEc5q3pO6Kl2Pmszc9IwEe.jpg' }
+            ];
+
+            container.innerHTML = genreList.map(g => `
+                <div class="genre-card" onclick="filterByGenre('${g.name}')">
+                    <img src="${g.img}" alt="${g.name}">
+                    <span>${g.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function filterByGenre(genreName) {
+            const filtered = database.filter(a => {
+                const genres = extractGenres(a.resume || '');
+                return genres.includes(genreName);
+            });
+            renderHomeGrid(filtered);
+        }
+
+        function renderResumeBanner() {
+            const container = document.getElementById('resume-container');
+            const savedData = localStorage.getItem('orco_progress');
+            if (!savedData) { container.innerHTML = ""; return; }
+            try {
+                const data = JSON.parse(savedData);
+                const anime = getAnime(data.animeId);
+                const item = getItem(anime, data.context);
+                if (!anime || !item) { container.innerHTML = ""; return; }
+
+                let labelStr = data.context.type === 'film' 
+                    ? `Film ${item.number || (data.context.itemIndex + 1)}`
+                    : `Saison ${anime.seasons[data.context.index]?.season_number || 1} • Épisode ${item.number || (data.context.itemIndex + 1)}`;
+
+                container.innerHTML = `
+                    <div class="resume-banner" onclick="openPlayerFromResume('${anime.id}')">
+                        <div class="resume-info">
+                            <span class="resume-badge">Reprendre la lecture</span>
+                            <span class="resume-title">${anime.title}</span>
+                            <span class="resume-ep">${labelStr} - ${item.title || ''}</span>
+                        </div>
+                        <div class="resume-play">▶</div>
+                    </div>
+                `;
+            } catch (e) {
+                container.innerHTML = "";
+            }
+        }
+
+        function openPlayerFromResume(animeId) {
+            const savedData = localStorage.getItem('orco_progress');
+            if (!savedData) return;
+            const data = JSON.parse(savedData);
+            currentAnimeId = animeId;
+            playerContext = data.context;
+            router.player();
+        }
+
+        function renderHomeGrid(items = database) {
+            const grid = document.getElementById('home-grid');
+            if (!items || items.length === 0) {
+                grid.innerHTML = "<p style='color: var(--text-sub)'>Aucun résultat trouvé.</p>";
+                return;
+            }
+            grid.innerHTML = items.map(anime => `
+                <div class="card" onclick="router.anime('${anime.id}')">
+                    <div class="card-img-wrapper">
+                        <img src="${anime.image || ''}" alt="${anime.title}" loading="lazy">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">${anime.title}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleSearch(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) {
+                renderHomeGrid(database);
+                return;
+            }
+            const filtered = database.filter(a => a.title.toLowerCase().includes(q) || (a.resume && a.resume.toLowerCase().includes(q)));
+            renderHomeGrid(filtered);
+        }
+
+        function renderAnimeDetail() {
+            const anime = getAnime(currentAnimeId);
+            const container = document.getElementById('anime-detail-content');
+            if (!anime) { container.innerHTML = "<p>Erreur d'affichage</p>"; return; }
+
+            let tabsHtml = '';
+            if (anime.seasons) {
+                anime.seasons.forEach((s, idx) => {
+                    const id = `s-${idx}`;
+                    tabsHtml += `<button class="tab-btn ${activeTabId === id ? 'active' : ''}" onclick="switchTab('${id}')">Saison ${s.season_number}</button>`;
+                });
+            }
+            if (anime.films && anime.films.length > 0) {
+                tabsHtml += `<button class="tab-btn ${activeTabId === 'films' ? 'active' : ''}" onclick="switchTab('films')">Films</button>`;
+            }
+
+            container.innerHTML = `
+                <div class="anime-detail-header">
+                    <img src="${anime.image || ''}" class="detail-poster" alt="${anime.title}">
+                    <div class="anime-info">
+                        <h2>${anime.title}</h2>
+                        <p class="anime-resume">${anime.resume || 'Aucun résumé disponible.'}</p>
+                    </div>
+                </div>
+                <div class="tabs-container">${tabsHtml}</div>
+                <div id="episodes-container" class="episodes-grid"></div>
+            `;
+            renderEpisodesList();
+        }
+
+        function switchTab(tabId) {
+            activeTabId = tabId;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const currentBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(`'${tabId}'`));
+            if (currentBtn) currentBtn.classList.add('active');
+            renderEpisodesList();
+        }
+
+        function renderEpisodesList() {
+            const anime = getAnime(currentAnimeId);
+            const container = document.getElementById('episodes-container');
+            if (!anime || !container) return;
+
+            let items = [];
+            let isFilm = activeTabId === 'films';
+            let seasonIndex = 0;
+
+            if (isFilm) {
+                items = anime.films || [];
+            } else {
+                seasonIndex = parseInt(activeTabId.replace('s-', ''), 10) || 0;
+                items = (anime.seasons && anime.seasons[seasonIndex]) ? anime.seasons[seasonIndex].episodes : [];
+            }
+
+            container.innerHTML = items.map((item, idx) => {
+                const hasVf = hasLang(item, 'vf');
+                const hasVostfr = hasLang(item, 'vostfr');
+                const titleStr = item.title ? item.title : (isFilm ? `Film ${idx + 1}` : `Épisode ${item.number || (idx + 1)}`);
+                const numStr = isFilm ? `FILM ${idx + 1}` : `ÉPISODE ${item.number || (idx + 1)}`;
+
+                return `
+                    <div class="episode-card" onclick="openPlayer('${isFilm ? 'film' : 'season'}', ${seasonIndex}, ${idx})">
+                        <div class="ep-info">
+                            <span class="ep-num">${numStr}</span>
+                            <span class="ep-title">${titleStr}</span>
+                        </div>
+                        <div class="badges-container">
+                            ${hasVf ? '<span class="badge vf">VF</span>' : ''}
+                            ${hasVostfr ? '<span class="badge vostfr">VOSTFR</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openPlayer(type, index, itemIndex) {
+            playerContext = { type, index, itemIndex };
+            router.player();
+        }
+
+        function setupPlayer() {
+            const anime = getAnime(currentAnimeId);
+            if (!anime) return;
+
+            document.getElementById('player-anime-name').innerText = anime.title;
+            document.getElementById('player-to-anime-btn').onclick = () => router.anime(currentAnimeId);
+
+            const item = getItem(anime, playerContext);
+            if (!item) return;
+
+            const isFilm = playerContext.type === 'film';
+            let labelStr = isFilm 
+                ? `Film ${item.number || (playerContext.itemIndex + 1)}`
+                : `Saison ${anime.seasons[playerContext.index]?.season_number || 1} • Épisode ${item.number || (playerContext.itemIndex + 1)}`;
+            
+            if (item.title) labelStr += ` : ${item.title}`;
+            document.getElementById('player-ep-info').innerText = labelStr;
+
+            updatePlayerControls(item);
+            embedVideo(item);
+            renderPills(anime);
+            updateNavButtons(anime);
+            saveProgress();
+        }
+
+        function updatePlayerControls(item) {
+            const vfBtn = document.getElementById('lang-vf');
+            const vostfrBtn = document.getElementById('lang-vostfr');
+
+            const hasVf = hasLang(item, 'vf');
+            const hasVostfr = hasLang(item, 'vostfr');
+
+            vfBtn.disabled = !hasVf;
+            vostfrBtn.disabled = !hasVostfr;
+
+            if (playerLang === 'vf' && !hasVf && hasVostfr) playerLang = 'vostfr';
+            if (playerLang === 'vostfr' && !hasVostfr && hasVf) playerLang = 'vf';
+
+            vfBtn.classList.toggle('active', playerLang === 'vf');
+            vostfrBtn.classList.toggle('active', playerLang === 'vostfr');
+
+            const sibnetBtn = document.getElementById('server-sibnet');
+            const vidmolyBtn = document.getElementById('server-vidmoly');
+
+            const hasSibnet = hasServer(item, playerLang, 'sibnet');
+            const hasVidmoly = hasServer(item, playerLang, 'vidmoly');
+
+            sibnetBtn.disabled = !hasSibnet;
+            vidmolyBtn.disabled = !hasVidmoly;
+
+            if (playerServer === 'sibnet' && !hasSibnet && hasVidmoly) playerServer = 'vidmoly';
+            if (playerServer === 'vidmoly' && !hasVidmoly && hasSibnet) playerServer = 'sibnet';
+
+            sibnetBtn.classList.toggle('active', playerServer === 'sibnet');
+            vidmolyBtn.classList.toggle('active', playerServer === 'vidmoly');
+        }
+
+        function embedVideo(item) {
+            const wrapper = document.getElementById('player-wrapper');
+            let videoId = "";
+
+            if (item && item[playerLang]) {
+                const l = item[playerLang];
+                if (typeof l === 'string') {
+                    videoId = l;
+                } else if (l[playerServer]) {
+                    videoId = l[playerServer];
+                }
+            }
+
+            if (!videoId) {
+                wrapper.innerHTML = "<div style='display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-sub);'>Source vidéo non disponible.</div>";
+                return;
+            }
+
+            let src = "";
+            if (playerServer === 'sibnet') {
+                src = `https://video.sibnet.ru/shell.php?videoid=${videoId}`;
+            } else if (playerServer === 'vidmoly') {
+                src = `https://vidmoly.biz/embed-${videoId}.html`;
+            }
+
+            wrapper.innerHTML = `<iframe src="${src}" allowfullscreen></iframe>`;
+        }
+
+        function switchLang(lang) {
+            playerLang = lang;
+            const anime = getAnime(currentAnimeId);
+            const item = getItem(anime, playerContext);
+            updatePlayerControls(item);
+            embedVideo(item);
+        }
+
+        function switchServer(server) {
+            playerServer = server;
+            const anime = getAnime(currentAnimeId);
+            const item = getItem(anime, playerContext);
+            updatePlayerControls(item);
+            embedVideo(item);
+        }
+
+        function renderPills(anime) {
+            const catPills = document.getElementById('player-cat-pills');
+            const itemPills = document.getElementById('player-item-pills');
+
+            let catHtml = '';
+            if (anime.seasons) {
+                anime.seasons.forEach((s, idx) => {
+                    const active = playerContext.type === 'season' && playerContext.index === idx;
+                    catHtml += `<div class="pill ${active ? 'active' : ''}" onclick="selectCatPill('season', ${idx})">Saison ${s.season_number}</div>`;
+                });
+            }
+            if (anime.films && anime.films.length > 0) {
+                const active = playerContext.type === 'film';
+                catHtml += `<div class="pill ${active ? 'active' : ''}" onclick="selectCatPill('film', 0)">Films</div>`;
+            }
+            catPills.innerHTML = catHtml;
+
+            let items = [];
+            if (playerContext.type === 'film') {
+                items = anime.films || [];
+            } else {
+                items = (anime.seasons && anime.seasons[playerContext.index]) ? anime.seasons[playerContext.index].episodes : [];
+            }
+
+            itemPills.innerHTML = items.map((it, idx) => {
+                const active = playerContext.itemIndex === idx;
+                const label = playerContext.type === 'film' ? `Film ${idx + 1}` : `Ép. ${it.number || (idx + 1)}`;
+                return `<div class="pill ${active ? 'active' : ''}" onclick="selectItemPill(${idx})">${label}</div>`;
+            }).join('');
+        }
+
+        function selectCatPill(type, index) {
+            playerContext.type = type;
+            playerContext.index = index;
+            playerContext.itemIndex = 0;
+            setupPlayer();
+        }
+
+        function selectItemPill(itemIndex) {
+            playerContext.itemIndex = itemIndex;
+            setupPlayer();
+        }
+
+        function updateNavButtons(anime) {
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+
+            let items = [];
+            if (playerContext.type === 'film') {
+                items = anime.films || [];
+            } else {
+                items = (anime.seasons && anime.seasons[playerContext.index]) ? anime.seasons[playerContext.index].episodes : [];
+            }
+
+            btnPrev.disabled = playerContext.itemIndex <= 0;
+            btnNext.disabled = playerContext.itemIndex >= items.length - 1;
+        }
+
+        function navigateEpisode(direction) {
+            playerContext.itemIndex += direction;
+            setupPlayer();
+        }
+
+        const router = {
+            home: () => {
+                document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active-view'));
+                document.getElementById('view-home').classList.add('active-view');
+                renderHeroBanner();
+                renderGenresGrid();
+                renderResumeBanner();
+                renderHomeGrid();
+                window.scrollTo(0, 0);
+            },
+            anime: (id) => {
+                currentAnimeId = id;
+                activeTabId = 's-0';
+                document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active-view'));
+                document.getElementById('view-anime').classList.add('active-view');
+                renderAnimeDetail();
+                window.scrollTo(0, 0);
+            },
+            player: () => {
+                document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active-view'));
+                document.getElementById('view-player').classList.add('active-view');
+                setupPlayer();
+                window.scrollTo(0, 0);
+            }
+        };
+
+        window.onload = () => {
+            router.home();
+        };
+    </script>
+</body>
+</html>
